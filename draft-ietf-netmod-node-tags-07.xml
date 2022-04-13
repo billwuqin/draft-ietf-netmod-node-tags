@@ -124,8 +124,8 @@
       with operation and management data in YANG modules. This method for
       tagging YANG data nodes is meant to be used for classifying data nodes
       or instance of data nodes from different YANG modules and identifying
-      their characteristics data. Tags may be registered as well as assigned
-      during the module definition, assigned by implementations, or
+      their characteristic data. Tags may be registered as well as assigned
+      during the definition of the module, assigned by implementations, or
       dynamically defined and set by users.</t>
 
       <t>This document also provides guidance to future YANG data model
@@ -145,15 +145,16 @@
       Organizations (SDOs) and the Open Source community, and it is likely
       that many more will be specified. These models cover many of the
       networking protocols and techniques. However, data nodes defined by
-      these technology-specific data models might represent a portion of
+      these technology-specific data models might represent only a portion of
       fault, configuration, accounting, performance, and security (FCAPS)
       management information (<xref target="FCAPS"/>) at different levels and
       network locations, but also categorised in various different ways.
       Furthermore, there is no consistent classification criteria or
-      representation for a specific service, feature, or data source.</t>
+      representations for a specific service, feature, or data source.</t>
 
-      <t>This document defines data node tags and associates them with data
-      nodes within a YANG module, which: <list style="symbols">
+      <t>This document defines data node tags and shows how they may be
+      associated with data nodes within a YANG module, which: <list
+          style="symbols">
           <t>Provide dictionary meaning for specific targeted data nodes.</t>
 
           <t>Indicate a relationship between data nodes within the same YANG
@@ -164,22 +165,22 @@
           nodes.</t>
         </list></t>
 
-      <t>The data node tags can be used by the NETCONF <xref
-      target="RFC6241"/> or RESTCONF <xref target="RFC8040"/>client to
-      classify data nodes of instance of these data nodes from different YANG
-      modules and identify characteristic data. In addition, these tags can
-      provide input, instructions, or indications to selection filters and
-      filter queries of configuration or operational state on a server based
-      on these data node tags (e.g., return specific data containing
-      operational state related to performance management). NETCONF clients
-      can discover data nodes or instances of data nodes with data node tags
-      supported by a NETCONF server by means of the &lt;get-schema&gt;
-      operation (Section 3.1 of <xref target="RFC6022"/>). The data node tag
-      information can also be queried using the model defined in <xref
-      target="Tagmodule"/>. Similar to YANG module tags defined in <xref
-      target="RFC8819"/>, these data node tags may be registered or assigned
-      during the module definition, assigned by implementations, or
-      dynamically defined and set by users.</t>
+      <t>The data node tags can be used by a NETCONF <xref target="RFC6241"/>
+      or RESTCONF <xref target="RFC8040"/>client to classify data nodes of
+      instance of these data nodes from different YANG modules and identify
+      characteristic data. In addition, these tags can provide input,
+      instructions, or indications to selection filters and filter queries of
+      configuration or operational state on a server based on these data node
+      tags (e.g., return specific data containing operational state related to
+      performance management). NETCONF clients can discover data nodes or
+      instances of data nodes with data node tags supported by a NETCONF
+      server by means of the &lt;get-schema&gt; operation (Section 3.1 of
+      <xref target="RFC6022"/>). The data node tag information can also be
+      queried using the model defined in <xref target="Tagmodule"/>. Similar
+      to YANG module tags defined in <xref target="RFC8819"/>, these data node
+      tags may be registered or assigned during the module definition,
+      assigned by implementations, or dynamically defined and set by
+      users.</t>
 
       <t>This document defines a YANG module <xref target="RFC7950"/> that
       augments the module tag model <xref target="RFC8819"/> and provides a
@@ -215,7 +216,7 @@
 
     <!-- intro -->
 
-    <section title="Data Classification and fetching using Data Node Tags">
+    <section title="Data Classification and Fetching using Data Node Tags">
       <t>Among data node tags, the 'opm' (object, property, metric) tags can
       be used to classify collected data, indicate relationships between data
       nodes, and capture YANG-modelled performance metrics data associated
@@ -326,10 +327,10 @@
     </section>
 
     <section title="Data Node Tag Values">
-      <t>All data node tags SHOULD begin with a prefix indicating who owns
-      their definition. An IANA registry (<xref target="prefix"/>) is used to
-      register data node tag prefixes. Initially, three prefixes are
-      defined.</t>
+      <t>All data node tags (except in some cases of user tags as described in
+      Section 4.3) begin with a prefix indicating who owns their definition.
+      An IANA registry (<xref target="prefix"/>) is used to register data node
+      tag prefixes. Initially, three prefixes are defined.</t>
 
       <t>No further structure is imposed by this document on the value
       following the registered prefix, and the value can contain any YANG type
@@ -357,30 +358,23 @@
         and are not registered with IANA. However, it is RECOMMENDED that the
         vendor includes extra identification in the tag to avoid collisions,
         such as using the enterprise or organization name following the
-        "vendor:" prefix (e.g.,
-        vendor:example.com:vendor-defined-classifier).</t>
+        "vendor:" prefix (e.g., vendor:entno:vendor-defined-classifier).</t>
       </section>
 
       <section title="User Tags">
-        <t>A user tag is any tag that has the prefix "user:". For the
-        avoidance of confusion, the colon (":") when it appears for the first
-        time, is always assumed to be the separator between a prefix and the
-        rest of the tag. And so, when a user tag does not have a prefix, it
-        MUST NOT contain a colon.</t>
+        <t>User tags are defined by a user/administrator and are not
+        registered by IANA. </t>
 
-        <t>These tags are defined by a user/administrator and are not meant to
-        be registered with IANA. Users are not required to use the "user:"
-        prefix; however, doing so is RECOMMENDED as it helps avoid
-        collisions.</t>
+        <t>Any tag with the prefix "user:" is a user tag. Furthermore, any tag
+        that does not contain a colon (":", i.e., has no prefix) is also a
+        user tag. Users are not required to use the "user:" prefix; however,
+        doing so is RECOMMENDED. </t>
       </section>
 
       <section title="Reserved Tags">
-        <t>Any tag not starting with the prefix "ietf:", "vendor:", "user:" or
-        reserved by other SDOs is reserved by IETF for future use (<xref
-        target="prefix"/>).</t>
-
-        <t>These tag values are not invalid, but simply reserved in the
-        context of specifications (e.g., RFCs).</t>
+        <t>Section 9.1 describes the IANA registry of tag prefixes. Any prefix
+        not included in that registry is reserved for future use, but tags
+        starting with such a prefix are still valid tags. </t>
       </section>
     </section>
 
@@ -462,8 +456,8 @@
 
       <section title="Implementation Tagging">
         <t>An implementation MAY include additional tags associated with data
-        nodes within a YANG module. These tags SHOULD be IETF (<xref
-        target="ietf"/>) or vendor tags (<xref target="vendor"/>).</t>
+        nodes within a YANG module. These tags SHOULD be IETF ((i.e.,
+        registered) ) or vendor tags.</t>
       </section>
 
       <section title="User Tagging">
@@ -608,7 +602,7 @@ module ietf-data-node-tags {
       aggregated statistics and reported as one metric subobject 
       value. 
 
-      The 'non-aggregated'  multi-source aggregation type allows 
+      The 'non-aggregated'multi-source aggregation type allows 
       measurement from each source of the same type (e.g., line 
       card, each subinterface of an aggregated Ethernet interface) to
       be reported separately.";
@@ -623,11 +617,11 @@ module ietf-data-node-tags {
         "Contains the list of data nodes and their associated data 
          object tags.";
       list data-node {
-        key "name";
+        key "ni-id";
         description
           "Includes a list of data nodes and their associated data  
            object tags.";
-        leaf name {
+        leaf ni-id {
           type nacm:node-instance-identifier;
           mandatory true;
           description
@@ -675,7 +669,9 @@ module ietf-data-node-tags {
     </section>
 
     <section anchor="guideline" title="Guidelines to Model Writers">
-      <t>This section updates <xref target="RFC8407"/>.</t>
+      <t>This section updates <xref target="RFC8407"/> by providing text that
+      may be regarded as a new subsection to Section 4 of that document. It
+      does not change anything already present in [RFC8407]. </t>
 
       <section title="Define Standard Tags">
         <t>A module MAY indicate, using data node tag extension statements, a
@@ -706,8 +702,7 @@ module ietf-data-node-tags {
         <t>The module writer can use existing standard data node tags, or use
         new data node tags defined in the data node definition, as
         appropriate. For IETF standardized modules, new data node tags MUST be
-        assigned in the IANA registry defined in Section <xref
-        target="tag"/>.</t>
+        assigned in the IANA registry defined in <xref target="tag"/>.</t>
       </section>
     </section>
 
@@ -820,14 +815,14 @@ Idem for agg and non-agg--></t>
    |                            |decrease or stay constant.|           |
    |                            |                          |           |
    | ietf:summary               |Represents the metric value [This     |
-   |                            |associated with a metric  | document  |
+   |                            |associated with a metric  | document] |
    |                            |data node that measures   |           |
    |                            |distributions of discrete |           |
    |                            |events without knowing    |           |
    |                            |predefined range.         |           |
    |                            |                          |           |
    | ietf:unknown               |Represents the metric value [This     |
-   |                            |associated with metric    | document  |
+   |                            |associated with metric    | document] |
    |                            |data node that can not    |           |
    |                            |determine the type of metric.         |
    +----------------------------+--------------------------+-----------+
@@ -921,11 +916,9 @@ Idem for agg and non-agg--></t>
     <section title="Contributors">
       <figure>
         <artwork>      Liang Geng
-      China Mobile
+      Individual
       32 Xuanwumen West St, Xicheng District
-      Beijing  10053
-
-      Email: gengliang@chinamobile.com</artwork>
+      Beijing  10053</artwork>
       </figure>
     </section>
 
@@ -1196,7 +1189,7 @@ module ietf-data-node-tags-state {
       </figure>
     </section>
 
-    <section title="Targeted data object collection example">
+    <section title="Targeted Data Fetching Example">
       <t>The following provides targeted data node collection example which
       helps reduce amount of data to be fetched. The subscription "id" values
       of 22 used below is just an example. In production, the actual values of

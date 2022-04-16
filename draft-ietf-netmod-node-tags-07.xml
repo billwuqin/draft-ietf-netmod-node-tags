@@ -274,13 +274,13 @@
       YANG data objects scattered across the same or different YANG modules
       that are supported by a device and capture all network performance data
       or all property data in a single view of the data. In the example shown
-      in <xref target="opm-tab"/>, the 'tunnel-svc' data node is a container
-      node defined in a 'tunnel-pm' module and can be seen as the root object
-      for property tagged data node (e.g., 'tunnel-svc'/'create-time') and
-      metric tagged data node (e.g., 'tunnel-svc'/'avg-latency'). The 'name',
-      'create-time', and 'modified-time' are property tagged data node under
-      'tunnel-svc' container. The 'avg-latency' and 'packet-loss' metrics are
-      tagged data nodes under 'tunnel-svc' container node. Consider the
+      in <xref target="opm-tab"/>, the 'tunnel-svc' data node is a list node
+      defined in a 'example-tunnel-pm' module and can be seen as the root
+      object for property tagged data node (e.g., 'tunnel-svc'/'create-time')
+      and metric tagged data node (e.g., 'tunnel-svc'/'avg-latency'). The
+      'name', 'create-time', and 'modified-time' are property tagged data node
+      under 'tunnel-svc' list. The 'avg-latency' and 'packet-loss' metrics are
+      tagged data nodes under 'tunnel-svc' list node. Consider the
       'tunnel-svc' data node and the 'tunnel-svc/name' data node as an
       example: the 'tunnel-svc' data node has one single 'object' tag (i.e.,
       'ietf:object'), while the 'tunnel-svc/name' data node has one single
@@ -479,9 +479,10 @@
 augment /tags:module-tags/tags:module:
   +--rw data-node-tags
      +--rw data-node* [ni-id]
-        +--rw ni-id  nacm:node-instance-identifier
+        +--rw ni-id        nacm:node-instance-identifier
+        +--rw type         identityref
         +--rw tag*         tags:tag
-        +--rw masked-tag*  tags:tag                    </artwork>
+        +--rw masked-tag*  tags:tag               </artwork>
         </figure>
       </section>
     </section>
@@ -557,7 +558,10 @@ module ietf-data-node-tags {
     reference
       "RFC XXXX: data node Tags in YANG Modules";
   }
-
+  identity data-property-type {
+   description
+     "Base identity for data property type.";
+  }
   extension opm-tag {
     argument tags:tag;
     description
@@ -627,7 +631,14 @@ module ietf-data-node-tags {
           description
             "The YANG data node name.";
         }
-        leaf-list tag {
+       leaf type {
+         type identityref {
+         base data-property-type;
+       }
+      description
+      "Type of routing protocol.";
+       }
+       leaf-list tag {
           type tags:tag;
           description
             "Lists the tags associated with the data node within 
@@ -710,9 +721,6 @@ module ietf-data-node-tags {
       <section anchor="prefix" title="YANG Data Object Tag Prefixes Registry">
         <t>This document requests IANA to create "YANG data node Tag Prefixes"
         subregistry in "YANG data node Tag" registry.</t>
-
-        <t>This registry allocates tag prefixes. All YANG data node Tags
-        should begin with one of the prefixes in this registry.</t>
 
         <t>Prefix entries in this registry should be short strings consisting
         of lowercase ASCII alpha-numeric characters and a final ":"
@@ -990,6 +998,40 @@ Idem for agg and non-agg--></t>
       </reference>
     </references>
 
+    <section title="Example: Additional Auxiliary Data Property Information">
+      <t>This section gives an example of how Auxiliary Data Property Module
+      could be defined. It demonstrates how auxiliary data property
+      configuration parameters can be conditionally augmented to the generic
+      data node list. The example is not intended as a complete module for
+      Auxiliary Data Property configuration.</t>
+
+      <figure>
+        <artwork>  module ex-auxiliary-data-property {
+     namespace "http://example.com/auxiliary-data-property";
+     prefix "dp";
+
+     import ietf-data-node-tags {
+       prefix ntags;
+     }
+     identity critical {
+      base ntags:data-property-type;
+      description
+      "Identity for critical data property type.";
+     }
+     augment "/ntags:data-node-tags/ntags:data-node" {
+       when "dp:type = 'dp:critical'";
+       leaf value {
+         type string;
+           description
+           "The auxiliary value information corresponding
+            to 'critical' data node instance.";
+       }
+       // other auxiliary data property config params, etc.
+     }
+   }</artwork>
+      </figure>
+    </section>
+
     <section anchor="netconfex" title="NETCONF Example">
       <t>The following is a NETCONF example result from a query of the data
       node tags list. For the sake of brevity only a few module and associated
@@ -1046,6 +1088,55 @@ s:ni-id&gt;
     &lt;/t:module&gt;
   &lt;/t:module-tags&gt;
 &lt;/ns0:data&gt;</artwork>
+      </figure>
+    </section>
+
+    <section title="Instance Level Tunnel Tagging Example">
+      <t>In the example shown in Figure 2,the 'tunnel-svc' data node is a list
+      node defined in a 'example-tunnel-pm' module and has 7 child nodes:
+      'name','create-time','modified-time','average-latency','packet-loss','min-latency','max-latency'
+      leaf node. In these child nodes, the 'name' leaf node is the key leaf
+      for the 'tunnel-svc' list. Following is the tree diagram [RFC8340] for
+      the "example-tunnel-pm" module:<figure>
+          <artwork>        +--rw tunnel-svc* [name]
+        |   +--rw name                      string
+        |   +--ro create-time               yang:date-and-time
+        |   +--ro modified-time             yang:date-and-time
+        |   +--ro average-latency           yang:gauge64
+        |   +--ro packet-loss               yang:counter64
+        |   +--ro min-latency               yang:gauge64
+        |   +--ro max-latency               yang:gauge64</artwork>
+        </figure></t>
+
+      <t>To help identify specific data for the a customer, users tags on
+      specific instances of the property and metrics are created as
+      follows:</t>
+
+      <figure>
+        <artwork>   &lt;rpc message-id="103"
+        xmlns="urn:ietf:params:xml:ns:netconf:base:1.0"&gt;
+     &lt;edit-data xmlns="urn:ietf:params:xml:ns:yang:ietf-netconf-nmda"
+                xmlns:ds="urn:ietf:params:xml:ns:yang:ietf-datastores"&gt;
+       &lt;datastore&gt;ds:running&lt;/datastore&gt;
+       &lt;config&gt;
+       &lt;data-node-tags xmlns="urn:ietf:params:xml:ns:yang:ietf-data-node-tags"&gt;
+         &lt;data-node&gt;
+           &lt;name&gt;
+            /tp:tunnel-svc[name='foo']/tp:packet-loss
+           &lt;/name&gt;
+           &lt;tag&gt;user:customer1_example_com&lt;/tag&gt;
+           &lt;tag&gt;user:customer2_example_com&lt;/tag&gt;
+         &lt;/data-node&gt;
+         &lt;data-node&gt;
+           &lt;name&gt;
+             /tp:tunnel-svc[name='bar']/tp:modified-time
+          &lt;/name&gt;
+           &lt;tag&gt;user:customer3_example_com&lt;/tag&gt;
+         &lt;/data-node&gt;
+       &lt;/data-node-tags&gt;
+       &lt;/config&gt;
+     &lt;/edit-data&gt;
+   &lt;/rpc&gt;</artwork>
       </figure>
     </section>
 
@@ -1318,6 +1409,8 @@ tions"
 
           <t>Update Model Tag design in section 5.1 based on Balazs's
           comments.</t>
+
+          <t>Add Instance level tunnel tagging example in the Appendix.</t>
 
           <t>Appendix Updates.</t>
         </list></t>

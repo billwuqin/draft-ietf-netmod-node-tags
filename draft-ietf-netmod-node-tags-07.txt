@@ -6,11 +6,11 @@ NETMOD Working Group                                               Q. Wu
 Internet-Draft                                                 B. Claise
 Updates: 8407 (if approved)                                       Huawei
 Intended status: Standards Track                                  P. Liu
-Expires: October 15, 2022                                          Z. Du
+Expires: October 18, 2022                                          Z. Du
                                                             China Mobile
                                                             M. Boucadair
                                                                   Orange
-                                                          April 13, 2022
+                                                          April 16, 2022
 
 
                      Data Node Tags in YANG Modules
@@ -44,7 +44,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on October 15, 2022.
+   This Internet-Draft will expire on October 18, 2022.
 
 
 
@@ -53,7 +53,7 @@ Status of This Memo
 
 
 
-Wu, et al.              Expires October 15, 2022                [Page 1]
+Wu, et al.              Expires October 18, 2022                [Page 1]
 
 Internet-Draft               YANG Node Tags                   April 2022
 
@@ -94,8 +94,8 @@ Table of Contents
      8.1.  Define Standard Tags  . . . . . . . . . . . . . . . . . .  14
    9.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .  15
      9.1.  YANG Data Object Tag Prefixes Registry  . . . . . . . . .  15
-     9.2.  IETF YANG Data Object Tags Registry . . . . . . . . . . .  15
-     9.3.  Updates to the IETF XML Registry  . . . . . . . . . . . .  17
+     9.2.  IETF YANG Data Object Tags Registry . . . . . . . . . . .  16
+     9.3.  Updates to the IETF XML Registry  . . . . . . . . . . . .  18
      9.4.  Updates to the YANG Module Names Registry . . . . . . . .  18
    10. Security Considerations . . . . . . . . . . . . . . . . . . .  18
    11. Acknowledgements  . . . . . . . . . . . . . . . . . . . . . .  19
@@ -103,19 +103,22 @@ Table of Contents
    13. References  . . . . . . . . . . . . . . . . . . . . . . . . .  19
      13.1.  Normative References . . . . . . . . . . . . . . . . . .  19
      13.2.  Informative References . . . . . . . . . . . . . . . . .  20
-   Appendix A.  NETCONF Example  . . . . . . . . . . . . . . . . . .  21
-   Appendix B.  Non-NMDA State Module  . . . . . . . . . . . . . . .  22
-   Appendix C.  Targeted Data Fetching Example . . . . . . . . . . .  25
+   Appendix A.  Example: Additional Auxiliary Data Property
+                Information  . . . . . . . . . . . . . . . . . . . .  22
+   Appendix B.  NETCONF Example  . . . . . . . . . . . . . . . . . .  22
 
 
 
-Wu, et al.              Expires October 15, 2022                [Page 2]
+Wu, et al.              Expires October 18, 2022                [Page 2]
 
 Internet-Draft               YANG Node Tags                   April 2022
 
 
-   Appendix D.  Changes between Revisions  . . . . . . . . . . . . .  28
-   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  30
+   Appendix C.  Instance Level Tunnel Tagging Example  . . . . . . .  23
+   Appendix D.  Non-NMDA State Module  . . . . . . . . . . . . . . .  24
+   Appendix E.  Targeted Data Fetching Example . . . . . . . . . . .  27
+   Appendix F.  Changes between Revisions  . . . . . . . . . . . . .  30
+   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  32
 
 1.  Introduction
 
@@ -159,17 +162,16 @@ Internet-Draft               YANG Node Tags                   April 2022
    instances of data nodes with data node tags supported by a NETCONF
    server by means of the <get-schema> operation (Section 3.1 of
    [RFC6022]).  The data node tag information can also be queried using
-   the model defined in Section 6.1.  Similar to YANG module tags
-   defined in [RFC8819], these data node tags may be registered or
 
 
 
-
-Wu, et al.              Expires October 15, 2022                [Page 3]
+Wu, et al.              Expires October 18, 2022                [Page 3]
 
 Internet-Draft               YANG Node Tags                   April 2022
 
 
+   the model defined in Section 6.1.  Similar to YANG module tags
+   defined in [RFC8819], these data node tags may be registered or
    assigned during the module definition, assigned by implementations,
    or dynamically defined and set by users.
 
@@ -219,9 +221,7 @@ Internet-Draft               YANG Node Tags                   April 2022
 
 
 
-
-
-Wu, et al.              Expires October 15, 2022                [Page 4]
+Wu, et al.              Expires October 18, 2022                [Page 4]
 
 Internet-Draft               YANG Node Tags                   April 2022
 
@@ -277,28 +277,28 @@ Internet-Draft               YANG Node Tags                   April 2022
 
 
 
-Wu, et al.              Expires October 15, 2022                [Page 5]
+Wu, et al.              Expires October 18, 2022                [Page 5]
 
 Internet-Draft               YANG Node Tags                   April 2022
 
 
    that are supported by a device and capture all network performance
    data or all property data in a single view of the data.  In the
-   example shown in Figure 2, the 'tunnel-svc' data node is a container
-   node defined in a 'tunnel-pm' module and can be seen as the root
+   example shown in Figure 2, the 'tunnel-svc' data node is a list node
+   defined in a 'example-tunnel-pm' module and can be seen as the root
    object for property tagged data node (e.g., 'tunnel-svc'/'create-
    time') and metric tagged data node (e.g., 'tunnel-svc'/'avg-
    latency').  The 'name', 'create-time', and 'modified-time' are
-   property tagged data node under 'tunnel-svc' container.  The 'avg-
-   latency' and 'packet-loss' metrics are tagged data nodes under
-   'tunnel-svc' container node.  Consider the 'tunnel-svc' data node and
-   the 'tunnel-svc/name' data node as an example: the 'tunnel-svc' data
-   node has one single 'object' tag (i.e., 'ietf:object'), while the
-   'tunnel-svc/name' data node has one single 'property' data node tag
-   (i.e., 'ietf:property').  In addition, not all metric data node need
-   to be tagged (e.g., define specific categories, such as loss-related
-   metric data nodes need to be tagged with a metric-type tag which can
-   further reduce amount data to be fetched).
+   property tagged data node under 'tunnel-svc' list.  The 'avg-latency'
+   and 'packet-loss' metrics are tagged data nodes under 'tunnel-svc'
+   list node.  Consider the 'tunnel-svc' data node and the 'tunnel-svc/
+   name' data node as an example: the 'tunnel-svc' data node has one
+   single 'object' tag (i.e., 'ietf:object'), while the 'tunnel-svc/
+   name' data node has one single 'property' data node tag (i.e.,
+   'ietf:property').  In addition, not all metric data node need to be
+   tagged (e.g., define specific categories, such as loss-related metric
+   data nodes need to be tagged with a metric-type tag which can further
+   reduce amount data to be fetched).
 
  +------------------------+--------------------------------+-----------+
  |      Data              |  Object    Property     Metric |  Multi-   |
@@ -333,7 +333,7 @@ Internet-Draft               YANG Node Tags                   April 2022
 
 
 
-Wu, et al.              Expires October 15, 2022                [Page 6]
+Wu, et al.              Expires October 18, 2022                [Page 6]
 
 Internet-Draft               YANG Node Tags                   April 2022
 
@@ -389,7 +389,7 @@ Internet-Draft               YANG Node Tags                   April 2022
 
 
 
-Wu, et al.              Expires October 15, 2022                [Page 7]
+Wu, et al.              Expires October 18, 2022                [Page 7]
 
 Internet-Draft               YANG Node Tags                   April 2022
 
@@ -445,7 +445,7 @@ Internet-Draft               YANG Node Tags                   April 2022
 
 
 
-Wu, et al.              Expires October 15, 2022                [Page 8]
+Wu, et al.              Expires October 18, 2022                [Page 8]
 
 Internet-Draft               YANG Node Tags                   April 2022
 
@@ -501,7 +501,7 @@ Internet-Draft               YANG Node Tags                   April 2022
 
 
 
-Wu, et al.              Expires October 15, 2022                [Page 9]
+Wu, et al.              Expires October 18, 2022                [Page 9]
 
 Internet-Draft               YANG Node Tags                   April 2022
 
@@ -525,7 +525,8 @@ Internet-Draft               YANG Node Tags                   April 2022
    augment /tags:module-tags/tags:module:
      +--rw data-node-tags
         +--rw data-node* [ni-id]
-           +--rw ni-id  nacm:node-instance-identifier
+           +--rw ni-id        nacm:node-instance-identifier
+           +--rw type         identityref
            +--rw tag*         tags:tag
            +--rw masked-tag*  tags:tag
 
@@ -553,15 +554,15 @@ Internet-Draft               YANG Node Tags                   April 2022
       "RFC 8819: YANG Module Tags ";
     }
 
-    organization
 
 
 
-Wu, et al.              Expires October 15, 2022               [Page 10]
+Wu, et al.              Expires October 18, 2022               [Page 10]
 
 Internet-Draft               YANG Node Tags                   April 2022
 
 
+    organization
       "IETF NetMod Working Group (NetMod)";
     contact
      "WG Web:  <https://datatracker.ietf.org/wg/netmod/>
@@ -609,15 +610,19 @@ Internet-Draft               YANG Node Tags                   April 2022
         "Initial revision.";
       reference
         "RFC XXXX: data node Tags in YANG Modules";
-    }
 
 
 
-Wu, et al.              Expires October 15, 2022               [Page 11]
+Wu, et al.              Expires October 18, 2022               [Page 11]
 
 Internet-Draft               YANG Node Tags                   April 2022
 
 
+    }
+    identity data-property-type {
+     description
+       "Base identity for data property type.";
+    }
     extension opm-tag {
       argument tags:tag;
       description
@@ -662,18 +667,17 @@ Internet-Draft               YANG Node Tags                   April 2022
         aggregated statistics and reported as one metric subobject
         value.
 
-        The 'non-aggregated'multi-source aggregation type allows
-        measurement from each source of the same type (e.g., line
-        card, each subinterface of an aggregated Ethernet interface) to
-        be reported separately.";
 
 
-
-Wu, et al.              Expires October 15, 2022               [Page 12]
+Wu, et al.              Expires October 18, 2022               [Page 12]
 
 Internet-Draft               YANG Node Tags                   April 2022
 
 
+        The 'non-aggregated'multi-source aggregation type allows
+        measurement from each source of the same type (e.g., line
+        card, each subinterface of an aggregated Ethernet interface) to
+        be reported separately.";
      }
 
     augment "/tags:module-tags/tags:module" {
@@ -695,7 +699,14 @@ Internet-Draft               YANG Node Tags                   April 2022
             description
               "The YANG data node name.";
           }
-          leaf-list tag {
+         leaf type {
+           type identityref {
+           base data-property-type;
+         }
+        description
+        "Type of routing protocol.";
+         }
+         leaf-list tag {
             type tags:tag;
             description
               "Lists the tags associated with the data node within
@@ -711,6 +722,14 @@ Internet-Draft               YANG Node Tags                   April 2022
                1) System tags (i.e., tags of 'system' origin) are
                   added.
                2) User configured tags (i.e., tags of 'intended'
+
+
+
+Wu, et al.              Expires October 18, 2022               [Page 13]
+
+Internet-Draft               YANG Node Tags                   April 2022
+
+
                   origin) are added.
                3) Any tag that is equal to a masked-tag is removed.";
             reference
@@ -722,14 +741,6 @@ Internet-Draft               YANG Node Tags                   April 2022
             description
               "The list of tags that should not be associated with the
                data node within the YANG module. The user can remove
-
-
-
-Wu, et al.              Expires October 15, 2022               [Page 13]
-
-Internet-Draft               YANG Node Tags                   April 2022
-
-
                (mask) tags from the operational state datastore by
                adding them to this list. It is not an error to add tags
                to this list that are not associated with the data
@@ -753,6 +764,27 @@ Internet-Draft               YANG Node Tags                   April 2022
    A module MAY indicate, using data node tag extension statements, a
    set of data node tags that are to be automatically associated with
    data node within the module (i.e., not added through configuration).
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Wu, et al.              Expires October 18, 2022               [Page 14]
+
+Internet-Draft               YANG Node Tags                   April 2022
+
 
    module example-module-A {
      //...
@@ -779,22 +811,12 @@ Internet-Draft               YANG Node Tags                   April 2022
    appropriate.  For IETF standardized modules, new data node tags MUST
    be assigned in the IANA registry defined in Section 9.2.
 
-
-
-Wu, et al.              Expires October 15, 2022               [Page 14]
-
-Internet-Draft               YANG Node Tags                   April 2022
-
-
 9.  IANA Considerations
 
 9.1.  YANG Data Object Tag Prefixes Registry
 
    This document requests IANA to create "YANG data node Tag Prefixes"
    subregistry in "YANG data node Tag" registry.
-
-   This registry allocates tag prefixes.  All YANG data node Tags should
-   begin with one of the prefixes in this registry.
 
    Prefix entries in this registry should be short strings consisting of
    lowercase ASCII alpha-numeric characters and a final ":" character.
@@ -807,6 +829,18 @@ Internet-Draft               YANG Node Tags                   April 2022
    there is a compelling reason to the contrary.
 
    The initial values for this registry are as follows:
+
+
+
+
+
+
+
+
+Wu, et al.              Expires October 18, 2022               [Page 15]
+
+Internet-Draft               YANG Node Tags                   April 2022
+
 
   +----------+----------------------------------+-----------+----------+
   | Prefix   | Description                      | Reference | Assignee |
@@ -835,13 +869,6 @@ Internet-Draft               YANG Node Tags                   April 2022
    data node Tag" registry.  These 3 subregistries appear below "YANG
    data node Tag Prefixes" registry.
 
-
-
-Wu, et al.              Expires October 15, 2022               [Page 15]
-
-Internet-Draft               YANG Node Tags                   April 2022
-
-
    Three subregistries allocate tags that have the registered prefix
    "ietf:".  New values should be well considered and not achievable
    through a combination of already existing IETF tags.
@@ -863,6 +890,14 @@ Internet-Draft               YANG Node Tags                   April 2022
    | ietf:property              |Represents a property     | [This     |
    |                            |data node(e.g., ifindex)  | document] |
    |                            |associated with a specific|           |
+
+
+
+Wu, et al.              Expires October 18, 2022               [Page 16]
+
+Internet-Draft               YANG Node Tags                   April 2022
+
+
    |                            |root object (e.g.,        |           |
    |                            |interfaces)               |           |
    |                            |                          |           |
@@ -890,14 +925,6 @@ Internet-Draft               YANG Node Tags                   April 2022
    | ietf:counter               |Represents any metric value           |
    |                            |associated with a metric  |           |
    |                            |data node that monotonically[This     |
-
-
-
-Wu, et al.              Expires October 15, 2022               [Page 16]
-
-Internet-Draft               YANG Node Tags                   April 2022
-
-
    |                            |increases over time,      | document] |
    |                            |starting from zero.       |           |
    |                            |                          |           |
@@ -919,6 +946,13 @@ Internet-Draft               YANG Node Tags                   April 2022
    |                            |data node that can not    |           |
    |                            |determine the type of metric.         |
    +----------------------------+--------------------------+-----------+
+
+
+
+Wu, et al.              Expires October 18, 2022               [Page 17]
+
+Internet-Draft               YANG Node Tags                   April 2022
+
 
    +----------------------------+--------------------------+-----------+
    | Multiple Source Tag        | Description              | Reference |
@@ -942,17 +976,6 @@ Internet-Draft               YANG Node Tags                   April 2022
       URI: urn:ietf:params:xml:ns:yang:ietf-data-node-tags
       Registrant Contact: The IESG.
       XML: N/A; the requested URI is an XML namespace.
-
-
-
-
-
-
-
-Wu, et al.              Expires October 15, 2022               [Page 17]
-
-Internet-Draft               YANG Node Tags                   April 2022
-
 
 9.4.  Updates to the YANG Module Names Registry
 
@@ -979,6 +1002,14 @@ Internet-Draft               YANG Node Tags                   April 2022
    provides the means to restrict access for particular NETCONF or
    RESTCONF users to a preconfigured subset of all available NETCONF or
    RESTCONF protocol operations and content, e.g., the presence of tags
+
+
+
+Wu, et al.              Expires October 18, 2022               [Page 18]
+
+Internet-Draft               YANG Node Tags                   April 2022
+
+
    may reveal information about the way in which data nodes are used and
    therefore providing access to private information or revealing an
    attack vector should be restricted.  Note that appropriate privilege
@@ -997,18 +1028,6 @@ Internet-Draft               YANG Node Tags                   April 2022
    to consider the security implications of any actions they choose to
    define, including the potential for a tag to get 'masked' by another
    user.
-
-
-
-
-
-
-
-
-Wu, et al.              Expires October 15, 2022               [Page 18]
-
-Internet-Draft               YANG Node Tags                   April 2022
-
 
 11.  Acknowledgements
 
@@ -1040,6 +1059,13 @@ Internet-Draft               YANG Node Tags                   April 2022
               DOI 10.17487/RFC3688, January 2004,
               <https://www.rfc-editor.org/info/rfc3688>.
 
+
+
+Wu, et al.              Expires October 18, 2022               [Page 19]
+
+Internet-Draft               YANG Node Tags                   April 2022
+
+
    [RFC6020]  Bjorklund, M., Ed., "YANG - A Data Modeling Language for
               the Network Configuration Protocol (NETCONF)", RFC 6020,
               DOI 10.17487/RFC6020, October 2010,
@@ -1057,14 +1083,6 @@ Internet-Draft               YANG Node Tags                   April 2022
               Writing an IANA Considerations Section in RFCs", BCP 26,
               RFC 8126, DOI 10.17487/RFC8126, June 2017,
               <https://www.rfc-editor.org/info/rfc8126>.
-
-
-
-
-Wu, et al.              Expires October 15, 2022               [Page 19]
-
-Internet-Draft               YANG Node Tags                   April 2022
-
 
    [RFC8174]  Leiba, B., "Ambiguity of Uppercase vs Lowercase in RFC
               2119 Key Words", BCP 14, RFC 8174, DOI 10.17487/RFC8174,
@@ -1095,6 +1113,15 @@ Internet-Draft               YANG Node Tags                   April 2022
               applications",  , September 1992,
               <http://www.itu.int/rec/T-REC-X.700-199209-I/en>.
 
+
+
+
+
+Wu, et al.              Expires October 18, 2022               [Page 20]
+
+Internet-Draft               YANG Node Tags                   April 2022
+
+
    [RFC5198]  Klensin, J. and M. Padlipsky, "Unicode Format for Network
               Interchange", RFC 5198, DOI 10.17487/RFC5198, March 2008,
               <https://www.rfc-editor.org/info/rfc5198>.
@@ -1111,16 +1138,6 @@ Internet-Draft               YANG Node Tags                   April 2022
    [RFC6242]  Wasserman, M., "Using the NETCONF Protocol over Secure
               Shell (SSH)", RFC 6242, DOI 10.17487/RFC6242, June 2011,
               <https://www.rfc-editor.org/info/rfc6242>.
-
-
-
-
-
-
-Wu, et al.              Expires October 15, 2022               [Page 20]
-
-Internet-Draft               YANG Node Tags                   April 2022
-
 
    [RFC8340]  Bjorklund, M. and L. Berger, Ed., "YANG Tree Diagrams",
               BCP 215, RFC 8340, DOI 10.17487/RFC8340, March 2018,
@@ -1154,7 +1171,46 @@ Internet-Draft               YANG Node Tags                   April 2022
               Notifications", RFC 9196, DOI 10.17487/RFC9196, February
               2022, <https://www.rfc-editor.org/info/rfc9196>.
 
-Appendix A.  NETCONF Example
+
+
+Wu, et al.              Expires October 18, 2022               [Page 21]
+
+Internet-Draft               YANG Node Tags                   April 2022
+
+
+Appendix A.  Example: Additional Auxiliary Data Property Information
+
+   This section gives an example of how Auxiliary Data Property Module
+   could be defined.  It demonstrates how auxiliary data property
+   configuration parameters can be conditionally augmented to the
+   generic data node list.  The example is not intended as a complete
+   module for Auxiliary Data Property configuration.
+
+     module ex-auxiliary-data-property {
+        namespace "http://example.com/auxiliary-data-property";
+        prefix "dp";
+
+        import ietf-data-node-tags {
+          prefix ntags;
+        }
+        identity critical {
+         base ntags:data-property-type;
+         description
+         "Identity for critical data property type.";
+        }
+        augment "/ntags:data-node-tags/ntags:data-node" {
+          when "dp:type = 'dp:critical'";
+          leaf value {
+            type string;
+              description
+              "The auxiliary value information corresponding
+               to 'critical' data node instance.";
+          }
+          // other auxiliary data property config params, etc.
+        }
+      }
+
+Appendix B.  NETCONF Example
 
    The following is a NETCONF example result from a query of the data
    node tags list.  For the sake of brevity only a few module and
@@ -1173,7 +1229,7 @@ Appendix A.  NETCONF Example
 
 
 
-Wu, et al.              Expires October 15, 2022               [Page 21]
+Wu, et al.              Expires October 18, 2022               [Page 22]
 
 Internet-Draft               YANG Node Tags                   April 2022
 
@@ -1221,7 +1277,63 @@ Internet-Draft               YANG Node Tags                   April 2022
 
                        Example NETCONF Query Output
 
-Appendix B.  Non-NMDA State Module
+Appendix C.  Instance Level Tunnel Tagging Example
+
+   In the example shown in Figure 2,the 'tunnel-svc' data node is a list
+   node defined in a 'example-tunnel-pm' module and has 7 child nodes:
+   'name','create-time','modified-time','average-latency','packet-
+
+
+
+Wu, et al.              Expires October 18, 2022               [Page 23]
+
+Internet-Draft               YANG Node Tags                   April 2022
+
+
+   loss','min-latency','max-latency' leaf node.  In these child nodes,
+   the 'name' leaf node is the key leaf for the 'tunnel-svc' list.
+   Following is the tree diagram [RFC8340] for the "example-tunnel-pm"
+   module:
+
+           +--rw tunnel-svc* [name]
+           |   +--rw name                      string
+           |   +--ro create-time               yang:date-and-time
+           |   +--ro modified-time             yang:date-and-time
+           |   +--ro average-latency           yang:gauge64
+           |   +--ro packet-loss               yang:counter64
+           |   +--ro min-latency               yang:gauge64
+           |   +--ro max-latency               yang:gauge64
+
+   To help identify specific data for the a customer, users tags on
+   specific instances of the property and metrics are created as
+   follows:
+
+   <rpc message-id="103"
+        xmlns="urn:ietf:params:xml:ns:netconf:base:1.0">
+     <edit-data xmlns="urn:ietf:params:xml:ns:yang:ietf-netconf-nmda"
+                xmlns:ds="urn:ietf:params:xml:ns:yang:ietf-datastores">
+       <datastore>ds:running</datastore>
+       <config>
+       <data-node-tags xmlns="urn:ietf:params:xml:ns:yang:ietf-data-node-tags">
+         <data-node>
+           <name>
+            /tp:tunnel-svc[name='foo']/tp:packet-loss
+           </name>
+           <tag>user:customer1_example_com</tag>
+           <tag>user:customer2_example_com</tag>
+         </data-node>
+         <data-node>
+           <name>
+             /tp:tunnel-svc[name='bar']/tp:modified-time
+          </name>
+           <tag>user:customer3_example_com</tag>
+         </data-node>
+       </data-node-tags>
+       </config>
+     </edit-data>
+   </rpc>
+
+Appendix D.  Non-NMDA State Module
 
    As per [RFC8407], the following is a non-NMDA module to support
    viewing the operational state for non-NMDA compliant servers.
@@ -1229,7 +1341,7 @@ Appendix B.  Non-NMDA State Module
 
 
 
-Wu, et al.              Expires October 15, 2022               [Page 22]
+Wu, et al.              Expires October 18, 2022               [Page 24]
 
 Internet-Draft               YANG Node Tags                   April 2022
 
@@ -1285,7 +1397,7 @@ Internet-Draft               YANG Node Tags                   April 2022
 
 
 
-Wu, et al.              Expires October 15, 2022               [Page 23]
+Wu, et al.              Expires October 18, 2022               [Page 25]
 
 Internet-Draft               YANG Node Tags                   April 2022
 
@@ -1341,7 +1453,7 @@ Internet-Draft               YANG Node Tags                   April 2022
 
 
 
-Wu, et al.              Expires October 15, 2022               [Page 24]
+Wu, et al.              Expires October 18, 2022               [Page 26]
 
 Internet-Draft               YANG Node Tags                   April 2022
 
@@ -1382,7 +1494,7 @@ Internet-Draft               YANG Node Tags                   April 2022
    }
    <CODE ENDS>
 
-Appendix C.  Targeted Data Fetching Example
+Appendix E.  Targeted Data Fetching Example
 
    The following provides targeted data node collection example which
    helps reduce amount of data to be fetched.  The subscription "id"
@@ -1397,7 +1509,7 @@ Appendix C.  Targeted Data Fetching Example
 
 
 
-Wu, et al.              Expires October 15, 2022               [Page 25]
+Wu, et al.              Expires October 18, 2022               [Page 27]
 
 Internet-Draft               YANG Node Tags                   April 2022
 
@@ -1453,7 +1565,7 @@ Internet-Draft               YANG Node Tags                   April 2022
 
 
 
-Wu, et al.              Expires October 15, 2022               [Page 26]
+Wu, et al.              Expires October 18, 2022               [Page 28]
 
 Internet-Draft               YANG Node Tags                   April 2022
 
@@ -1509,7 +1621,7 @@ Internet-Draft               YANG Node Tags                   April 2022
 
 
 
-Wu, et al.              Expires October 15, 2022               [Page 27]
+Wu, et al.              Expires October 18, 2022               [Page 29]
 
 Internet-Draft               YANG Node Tags                   April 2022
 
@@ -1542,7 +1654,7 @@ Internet-Draft               YANG Node Tags                   April 2022
    The publisher returns specific object types of operational state
    (e.g., in-errors statistics data) subscribed by the client.
 
-Appendix D.  Changes between Revisions
+Appendix F.  Changes between Revisions
 
    Editorial Note (To be removed by RFC Editor)
 
@@ -1555,20 +1667,22 @@ Appendix D.  Changes between Revisions
 
    o  Update Model Tag design in section 5.1 based on Balazs's comments.
 
+   o  Add Instance level tunnel tagging example in the Appendix.
+
    o  Appendix Updates.
 
    v05 - v06
 
    o  Additional Editorial changes;
 
-   o  Use the folding defined in [RFC8792].
 
 
-
-Wu, et al.              Expires October 15, 2022               [Page 28]
+Wu, et al.              Expires October 18, 2022               [Page 30]
 
 Internet-Draft               YANG Node Tags                   April 2022
 
+
+   o  Use the folding defined in [RFC8792].
 
    v04 - v05
 
@@ -1616,15 +1730,15 @@ Internet-Draft               YANG Node Tags                   April 2022
 
    o  Change Metric Group into Metric Type in the YANG model;
 
-   o  Add 5 metric types in section 7.2;
 
 
 
-
-Wu, et al.              Expires October 15, 2022               [Page 29]
+Wu, et al.              Expires October 18, 2022               [Page 31]
 
 Internet-Draft               YANG Node Tags                   April 2022
 
+
+   o  Add 5 metric types in section 7.2;
 
    v00 - v01
 
@@ -1675,9 +1789,7 @@ Authors' Addresses
 
 
 
-
-
-Wu, et al.              Expires October 15, 2022               [Page 30]
+Wu, et al.              Expires October 18, 2022               [Page 32]
 
 Internet-Draft               YANG Node Tags                   April 2022
 
@@ -1733,4 +1845,4 @@ Internet-Draft               YANG Node Tags                   April 2022
 
 
 
-Wu, et al.              Expires October 15, 2022               [Page 31]
+Wu, et al.              Expires October 18, 2022               [Page 33]

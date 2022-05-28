@@ -1,0 +1,1354 @@
+<?xml version="1.0" encoding="US-ASCII"?>
+<!-- This template is for creating an Internet Draft using xml2rfc,               
+    which is available here: http://xml.resource.org. -->
+<!DOCTYPE rfc SYSTEM "rfc2629.dtd" [
+<!-- One method to get references from the online citation libraries.             
+    There has to be one entity for each item to be referenced.                    
+    An alternate method (rfc include) is described in the references. -->
+<!ENTITY RFC2119 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.2119.xml">
+<!ENTITY RFC2697 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.2697.xml">
+<!ENTITY RFC2698 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.2698.xml">
+<!ENTITY RFC6020 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.6020.xml">
+]>
+<?xml-stylesheet type='text/xsl' href='rfc2629.xslt' ?>
+<?rfc toc="yes" ?>
+<?rfc tocompact="yes"?>
+<?rfc tocindent="yes"?>
+<?rfc symrefs="yes" ?>
+<?rfc sortrefs="yes"?>
+<?rfc iprnotified="no" ?>
+<?rfc strict="yes" ?>
+<?rfc compact="yes"?>
+<?rfc subcompact="no"?>
+<rfc category="std" docName="draft-ietf-netmod-node-tags-08" ipr="trust200902"
+     updates="8407">
+  <front>
+    <title abbrev="YANG Node Tags">Data Node Tags in YANG Modules</title>
+
+    <author fullname="Qin Wu" initials="Q." surname="Wu">
+      <organization>Huawei</organization>
+
+      <address>
+        <postal>
+          <street>101 Software Avenue, Yuhua District</street>
+
+          <city>Nanjing</city>
+
+          <region>Jiangsu</region>
+
+          <code>210012</code>
+
+          <country>China</country>
+        </postal>
+
+        <email>bill.wu@huawei.com</email>
+      </address>
+    </author>
+
+    <author fullname="Benoit Claise" initials="B." surname="Claise">
+      <organization>Huawei</organization>
+
+      <address>
+        <postal>
+          <street>De Kleetlaan 6a b1</street>
+
+          <city>Diegem</city>
+
+          <code>1831</code>
+
+          <country>Belgium</country>
+        </postal>
+
+        <email>benoit.claise@huawei.com</email>
+      </address>
+    </author>
+
+    <author fullname="Peng Liu" initials="P." surname="Liu">
+      <organization>China Mobile</organization>
+
+      <address>
+        <postal>
+          <street>32 Xuanwumen West St, Xicheng District</street>
+
+          <city>Beijing</city>
+
+          <code>10053</code>
+        </postal>
+
+        <email>liupengyjy@chinamobile.com</email>
+      </address>
+    </author>
+
+    <author fullname="Zongpeng Du" initials="Z." surname="Du">
+      <organization>China Mobile</organization>
+
+      <address>
+        <postal>
+          <street>32 Xuanwumen West St, Xicheng District</street>
+
+          <city>Beijing</city>
+
+          <code>10053</code>
+        </postal>
+
+        <email>duzongpeng@chinamobile.com</email>
+      </address>
+    </author>
+
+    <author fullname="Mohamed Boucadair" initials="M." surname="Boucadair">
+      <organization>Orange</organization>
+
+      <address>
+        <postal>
+          <street/>
+
+          <city>Rennes</city>
+
+          <code>35000</code>
+
+          <country>France</country>
+        </postal>
+
+        <email>mohamed.boucadair@orange.com</email>
+      </address>
+    </author>
+
+    <date year="2022"/>
+
+    <area>OPS Area</area>
+
+    <workgroup>NETMOD Working Group</workgroup>
+
+    <abstract>
+      <t>This document defines a method to tag data nodes that are associated
+      with operation and management data in YANG modules. This method for
+      tagging YANG data nodes is meant to be used for classifying data nodes
+      or instance of data nodes from different YANG modules and identifying
+      their characteristic data. Tags may be registered as well as assigned
+      during the definition of the module, assigned by implementations, or
+      dynamically defined and set by users.</t>
+
+      <t>This document also provides guidance to future YANG data model
+      writers; as such, this document updates RFC 8407.</t>
+    </abstract>
+  </front>
+
+  <middle>
+    <section anchor="intro" title="Introduction">
+      <t>The use of tags for classification and organization purposes is
+      fairly ubiquitous, not only within IETF protocols, but globally in the
+      Internet (e.g., "#hashtags"). For the specific case of YANG data models,
+      a module tag is defined as a string that is associated with a module
+      name at the module level <xref target="RFC8819"/>.</t>
+
+      <t>Many data models have been specified by various Standards Developing
+      Organizations (SDOs) and the Open Source community, and it is likely
+      that many more will be specified. These models cover many of the
+      networking protocols and techniques. However, data nodes defined by
+      these technology-specific data models might represent only a portion of
+      fault, configuration, accounting, performance, and security (FCAPS)
+      management information (<xref target="FCAPS"/>) at different levels and
+      network locations, but also categorised in various different ways.
+      Furthermore, there is no consistent classification criteria or
+      representations for a specific service, feature, or data source.</t>
+
+      <t>This document defines data node tags and shows how they may be
+      associated with data nodes within a YANG module, which: <list
+          style="symbols">
+          <t>Provide dictionary meaning for specific targeted data nodes;</t>
+
+          <t>Indicate a relationship between data nodes within the same YANG
+          module or from different YANG modules;</t>
+
+          <t>Identify auxiliary data properties related to data nodes;</t>
+
+          <t>Identify key performance metric related data nodes and the
+          absolute XPath expression identifying the element path to the
+          nodes.</t>
+        </list></t>
+
+      <t>The data node tags can be used by a NETCONF <xref target="RFC6241"/>
+      or RESTCONF <xref target="RFC8040"/> client to classify data nodes or
+      instance of these data nodes from different YANG modules and identify
+      characteristic data. In addition, these tags can provide input,
+      instructions, or indications to selection filters and filter queries of
+      configuration or operational state on a server based on these data node
+      tags (e.g., return specific data containing operational state related to
+      performance management). NETCONF clients can discover data node tags
+      associated with data nodes or instances of data nodes supported by a
+      NETCONF server by means of the &lt;get-data&gt; operation on operational
+      datastore (Section 3.1 of <xref target="RFC8526"/>). Similar to YANG
+      module tags defined in <xref target="RFC8819"/>, these data node tags
+      may be registered or assigned during the module definition, assigned by
+      implementations, or dynamically defined and set by users.</t>
+
+      <t>This document defines a YANG module <xref target="RFC7950"/> that
+      augments the module tag model <xref target="RFC8819"/> and provides a
+      list of data node instance entries to add or remove data node tags as
+      well as to view the set of data node tags associated with specific data
+      nodes or instance of data nodes within YANG modules.</t>
+
+      <t>This document defines an extension statement to indicate data node
+      tags that should be added by the module implementation automatically
+      (i.e., outside of configuration).</t>
+
+      <t>This document also defines an IANA registry for tag prefixes and a
+      set of globally assigned tags (<xref target="iana"/>).</t>
+
+      <t><xref target="guideline"/> provides guidelines for authors of YANG
+      data models. This document updates <xref target="RFC8407"/>.</t>
+
+      <t>The YANG data model in this document conforms to the Network
+      Management Datastore Architecture defined in <xref
+      target="RFC8342"/>.</t>
+    </section>
+
+    <section title="Terminology">
+      <t>The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
+      "SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED", "MAY", and
+      "OPTIONAL" in this document are to be interpreted as described in BCP 14
+      <xref target="RFC2119"/><xref target="RFC8174"/> when, and only when,
+      they appear in all capitals, as shown here.</t>
+
+      <t>The meanings of the symbols in tree diagrams are defined in <xref
+      target="RFC8340"/>.</t>
+    </section>
+
+    <!-- intro -->
+
+    <section title="Some possible use cases for data node tags">
+      <t>The following are a few example use cases for data node tags. This
+      list is certainly not exhaustive.</t>
+
+      <t>One example use of tags would be to help filter discrete categories
+      of YANG data nodes scattered across the same or different YANG modules
+      that are supported by a device. For example, if data nodes or instance
+      of these data nodes in YANG modules are suitably tagged, then an XPath
+      query can be used to list all of the network performance related data
+      nodes or data node instances in the operational datastores supported by
+      a device.</t>
+
+      <t>Tag classification is useful for users searching data nodes
+      repositories. A query restricted to the 'ietf:counter' data node tag
+      could be used to return only the YANG data nodes associated with the
+      counter. Without tags, a user would need to know the name of all the
+      IETF YANG data nodes or instances of data nodes in different YANG
+      modules.</t>
+
+      <t>Future management protocol extensions could allow for filtering
+      queries of configuration or operational state on a server based on tags
+      (for example, return all operational state related to system
+      management).</t>
+    </section>
+
+    <section title="Data Node Tag Values">
+      <t>All data node tags (except in some cases of user tags as described in
+      Section 4.3) begin with a prefix indicating who owns their definition.
+      An IANA registry (<xref target="prefix"/>) is used to register data node
+      tag prefixes. Initially, three prefixes are defined.</t>
+
+      <t>No further structure is imposed by this document on the value
+      following the registered prefix, and the value can contain any YANG type
+      'string' characters except carriage returns, newlines, tabs, and
+      spaces.</t>
+
+      <t>Except for the conflict-avoiding prefix, this document is
+      purposefully not specifying any structure on (i.e., restricting) the tag
+      values. The intent is to avoid arbitrarily restricting the values that
+      designers, implementers, and users can use. As a result of this choice,
+      designers, implementers, and users are free to add or not add any
+      structure they may require to their own tag values.</t>
+
+      <section anchor="ietf" title="IETF Tags">
+        <t>An IETF tag is a data node tag that has the prefix "ietf:".</t>
+
+        <t>All IETF data node tags are registered with IANA in the registry
+        defined in <xref target="tag"/>.</t>
+      </section>
+
+      <section anchor="vendor" title="Vendor Tags">
+        <t>A vendor tag is a tag that has the prefix "vendor:".</t>
+
+        <t>These tags are defined by the vendor that implements the module,
+        and are not registered with IANA. However, it is RECOMMENDED that the
+        vendor includes extra identification in the tag to avoid collisions,
+        such as using the enterprise or organization name following the
+        "vendor:" prefix (e.g., vendor:entno:vendor-defined-classifier).</t>
+      </section>
+
+      <section title="User Tags">
+        <t>User tags are defined by a user/administrator and are not
+        registered by IANA.</t>
+
+        <t>Any tag with the prefix "user:" is a user tag. Furthermore, any tag
+        that does not contain a colon (":", i.e., has no prefix) is also a
+        user tag. Users are not required to use the "user:" prefix; however,
+        doing so is RECOMMENDED.</t>
+      </section>
+
+      <section title="Reserved Tags">
+        <t>Section 9.1 describes the IANA registry of tag prefixes. Any prefix
+        not included in that registry is reserved for future use, but tags
+        starting with such a prefix are still valid tags.</t>
+      </section>
+    </section>
+
+    <section title="Data Node Tag Management">
+      <t>Tags may be associated with a data node within a YANG module in a
+      number of ways. Typically, tags may be defined and associated at the
+      module design time, at implementation time without the need of a live
+      server, or via user administrative control. As the main consumers of
+      data node tags are users, users may also remove any tag from a live
+      server, no matter how the tag became associated with a data node within
+      a YANG module.</t>
+
+      <section title="Module Design Tagging">
+        <t>A data node definition MAY indicate a set of data node tags to be
+        added by a module's implementer. These design time tags are indicated
+        using 'node-tag' extension statement.</t>
+
+        <t>If the data node is defined in an IETF Standards Track document,
+        the data node tags MUST be IETF Tags (<xref target="ietf"/>). Thus,
+        new data nodes can drive the addition of new IETF tags to the IANA
+        registry defined in <xref target="tag"/>, and the IANA registry can
+        serve as a check against duplication.</t>
+      </section>
+
+      <section title="Implementation Tagging">
+        <t>An implementation MAY include additional tags associated with data
+        nodes within a YANG module. These tags SHOULD be IETF ((i.e.,
+        registered) ) or vendor tags.</t>
+      </section>
+
+      <section title="User Tagging">
+        <t>Data node tags of any kind, with or without a prefix, can be
+        assigned and removed by the user from a server using normal
+        configuration mechanisms. In order to remove a data node tag from the
+        operational datastore, the user adds a matching "masked-tag" entry for
+        a given data node within the 'ietf-data-node-tags' module.</t>
+      </section>
+    </section>
+
+    <section title="Data Node Tags Module Structure">
+      <section anchor="Tagmodule" title="Data Node Tags Module Tree">
+        <t>The tree associated with the "ietf-data-node-tags" module is as
+        follows:</t>
+
+        <figure title="YANG Module Data Node Tags Tree Diagram">
+          <artwork>module: ietf-data-node-tags
+augment /tags:module-tags/tags:module:
+  +--rw data-node-tags
+     +--rw data-node* [id]
+        +--rw id           nacm:node-instance-identifier
+        +--rw tags* [tag]
+        |  +--rw tag       tags:tag
+        |  +--rw type?     identityref
+        +--rw masked-tag*  tags:tag  </artwork>
+        </figure>
+      </section>
+    </section>
+
+    <section title="YANG Module">
+      <t>This module imports types from [RFC8819],[RFC8341].</t>
+
+      <figure>
+        <artwork>&lt;CODE BEGINS&gt; file "ietf-data-node-tags@2022-02-04.yang"
+module ietf-data-node-tags {
+  yang-version 1.1;
+  namespace "urn:ietf:params:xml:ns:yang:ietf-data-node-tags";
+  prefix ntags;
+
+  import ietf-netconf-acm {
+    prefix nacm;
+    reference
+    "RFC 8341: Network Configuration Access Control 
+               Model";
+  }
+  import ietf-module-tags {
+    prefix tags;
+    reference
+    "RFC 8819: YANG Module Tags ";
+  }
+
+  organization
+    "IETF NetMod Working Group (NetMod)";
+  contact
+   "WG Web:  &lt;https://datatracker.ietf.org/wg/netmod/&gt;
+    WG List: &lt;mailto:netmod@ietf.org&gt;
+
+    Editor: Qin Wu 
+            &lt;mailto:bill.wu@huawei.com&gt;
+
+    Editor: Benoit Claise 
+            &lt;mailto:benoit.claise@huawei.com&gt;
+
+    Editor: Peng Liu 
+            &lt;mailto:liupengyjy@chinamobile.com&gt;
+
+    Editor: Zongpeng Du 
+            &lt;mailto:duzongpeng@chinamobile.com&gt;
+
+    Editor: Mohamed Boucadair 
+            &lt;mailto:mohamed.boucadair@orange.com&gt;";
+   // RFC Ed.: replace XXXX with actual RFC number and
+   // remove this note.
+  description
+    "This module describes a mechanism associating data node
+     tags with YANG data node within YANG modules. Tags may be IANA
+     assigned or privately defined.
+
+     Copyright (c) 2022 IETF Trust and the persons identified as
+     authors of the code. All rights reserved.
+
+     Redistribution and use in source and binary forms, with or
+     without modification, is permitted pursuant to, and subject to
+     the license terms contained in, the Revised BSD License set
+     forth in Section 4.c of the IETF Trust's Legal Provisions
+     Relating to IETF Documents
+     (https://trustee.ietf.org/license-info).
+
+     This version of this YANG module is part of RFC XXXX
+     (https://datatracker.ietf.org/html/rfcXXXX); see the RFC itself 
+     for full legal notices.";
+
+   // RFC Ed.: update the date below with the date of RFC publication
+   // and RFC number and remove this note.
+  revision 2022-02-04 {
+    description
+      "Initial revision.";
+    reference
+      "RFC XXXX: data node Tags in YANG Modules";
+  }
+  identity node-tag-type {
+   description
+     "Base identity for node tag type.";
+  }
+  identity metric {
+   base node-tag-type;
+   description
+   "Identity for metric tag type.";
+  }
+  identity delay {
+   base node-tag-type;
+   description
+   "Identity for delay metric tag type.";
+  }
+  identity jitter {
+   base node-tag-type;
+   description
+   "Identity for jitter metric tag type.";
+  }
+  identity loss {
+   base node-tag-type;
+   description
+   "Identity for loss metric tag type.";
+  }
+  identity counter {
+   base node-tag-type;
+   description
+   "Identity for counter metric tag type.";
+  }
+  identity summary {
+   base node-tag-type;
+   description
+   "Identity for summary metric tag type.";
+  }
+  identity gauge {
+   base node-tag-type;
+   description
+   "Identity for gauge metric tag type.";
+  }
+  identity unknown {
+   base node-tag-type;
+   description
+   "Identity for unkown metric tag type.";
+  }
+  identity agg {
+   base node-tag-type;
+   description
+   "Identity for aggregated metric tag type.";
+  }
+  extension node-tag {
+    argument tag;
+    description
+      "The argument 'tag' is of type 'tag'. This extension statement
+       is used by module authors to indicate the node tags that should 
+       be added automatically by the system. As such,  the origin of 
+       the value for the pre-defined tags should be set to 'system'.";
+  }
+
+  augment "/tags:module-tags/tags:module" {
+    description
+      "Augment the Module Tags module with data node tag 
+       attributes.";
+    container data-node-tags {
+      description
+        "Contains the list of data nodes and their associated data 
+         node tags.";
+      list data-node {
+        key "id";
+        description
+          "Includes a list of data nodes and their associated data  
+           node tags.";
+        leaf id {
+          type nacm:node-instance-identifier;
+          description
+            "The YANG data node name.";
+        }
+       list tags {
+         key "tag";
+          description
+            "Lists the tags associated with the data node within 
+             the YANG  module. 
+
+             See the IANA 'YANG data node Tag Prefixes' registry  
+             for reserved prefixes and the IANA 'IETF YANG Data 
+             Node Tags' registry for IETF tags.
+
+             The 'operational' state view of this list is
+             constructed using the following steps:
+
+             1) System tags (i.e., tags of 'system' origin) are 
+                added.
+             2) User configured tags (i.e., tags of 'intended' 
+                origin) are added.
+             3) Any tag that is equal to a masked-tag is removed.";
+          reference
+            "RFC XXXX: data node Tags in YANG Data
+                       Modules, Section 9";
+        leaf tag {
+          type tags:tag;
+          description
+            "Node tag corresponding to type of node tag.";
+        }
+       leaf type {
+         type identityref {
+         base node-tag-type;
+        }
+        description
+          "Type of node tag.";
+        }
+       }
+        leaf-list masked-tag {
+          type tags:tag;
+          description
+            "The list of tags that should not be associated with the
+             data node within the YANG module. The user can remove 
+             (mask) tags from the operational state datastore by 
+             adding them to this list. It is not an error to add tags 
+             to this list that are not associated with the data 
+             node within YANG  module, but they have no operational 
+             effect.";
+        }
+       }
+      }
+   }
+  }
+
+&lt;CODE ENDS&gt;</artwork>
+      </figure>
+    </section>
+
+    <section anchor="guideline" title="Guidelines to Model Writers">
+      <t>This section updates <xref target="RFC8407"/> by providing text that
+      may be regarded as a new subsection to Section 4 of that document. It
+      does not change anything already present in [RFC8407].</t>
+
+      <section title="Define Standard Tags">
+        <t>A module MAY indicate, using data node tag extension statements, a
+        set of data node tags that are to be automatically associated with
+        data node within the module (i.e., not added through
+        configuration).</t>
+
+        <figure anchor="opm-example" title="An Example of Data Object Tag">
+          <artwork>module example-module-A {
+  //...
+  import ietf-data-node-tags { prefix ntags; }
+
+  container top {
+    list X {
+      leaf foo {
+         ntags:node-tag "ietf:summary";
+      }
+      leaf bar {
+        ntags:node-tag "ietf:loss";
+      }
+    }
+  }
+  // ...
+}</artwork>
+        </figure>
+
+        <t>The module writer can use existing standard data node tags, or use
+        new data node tags defined in the data node definition, as
+        appropriate. For IETF standardized modules, new data node tags MUST be
+        assigned in the IANA registry defined in <xref target="tag"/>.</t>
+      </section>
+    </section>
+
+    <section anchor="iana" title="IANA Considerations">
+      <section anchor="prefix" title="YANG Data Node Tag Prefixes Registry">
+        <t>This document requests IANA to create "YANG data node Tag Prefixes"
+        subregistry in "YANG data node Tag" registry.</t>
+
+        <t>Prefix entries in this registry should be short strings consisting
+        of lowercase ASCII alpha-numeric characters and a final ":"
+        character.</t>
+
+        <t>The allocation policy for this registry is Specification Required
+        <xref target="RFC8126"/>. The Reference and Assignee values should be
+        sufficient to identify and contact the organization that has been
+        allocated the prefix. There is no specific guidance for the Designated
+        Expert and there is a presumption that a code point should be granted
+        unless there is a compelling reason to the contrary.</t>
+
+        <t>The initial values for this registry are as follows:</t>
+
+        <figure title="Table 1">
+          <artwork>+----------+----------------------------------+-----------+----------+
+| Prefix   | Description                      | Reference | Assignee |
++----------+----------------------------------+-----------+----------+
+| ietf:    | IETF Tags allocated in the IANA  | [This     | IETF     |
+|          | IETF YANG data node Tags         | document] |          |
+|          | registry                         |           |          |
+|          |                                  |           |          |
+| vendor:  | Non-registered tags allocated by | [This     | IETF     |
+|          | the module's implementer.        | document] |          |
+|          |                                  |           |          |
+| user:    | Non-registered tags allocated by | [This     | IETF     |
+|          | and for the user.                | document] |          |
++----------+----------------------------------+-----------+----------+</artwork>
+        </figure>
+
+        <t>Other standards organizations (SDOs) wishing to allocate their own
+        set of tags should request the allocation of a prefix from this
+        registry.</t>
+      </section>
+
+      <section anchor="tag" title="IETF YANG Data Node Tags Registry">
+        <t>This document requests IANA to create "IETF Node Tags" subregistry
+        in "YANG data node Tag" registry. This subregistry appears below "YANG
+        data node Tag Prefixes" registry.</t>
+
+        <t>This subregistry allocates tags that have the registered prefix
+        "ietf:". New values should be well considered and not achievable
+        through a combination of already existing IETF tags.</t>
+
+        <t>The allocation policy for this subregistry is IETF Review <xref
+        target="RFC8126"/>. The Designated Expert is expected to verify that
+        IANA assigned tags conform to Net-Unicode as defined in <xref
+        target="RFC5198"/>, and shall not need normalization.</t>
+
+        <t>The initial values for this subregistry are as follows:<!--Med: The same value is used for both those associated with defined/non define ranges. Is that on purpose?
+Idem for agg and non-agg--></t>
+
+        <figure title="Table 2">
+          <artwork>   +----------------------------+--------------------------+-----------+
+   | Node Tag                    | Description              | Reference |
+   +----------------------------+--------------------------+-----------+
+   |                            |                          |           |
+   | ietf:metric                |Represent metric data     | [This     |
+   |                            |(e.g., ifstatistics)      | document] |
+   |                            |associated with specific  |           |
+   |                            |data node (e.g.,          |           |
+   |                            |interfaces)               |           |
+   |                            |                          |           |
+   | ietf:delay                 |Represents the delay metric           |
+   |                            |data associated with      | [This     |
+   |                            |specific data node.       | document] |      
+   |                            |                          |           |
+   | ietf:jitter                |Represents the jitter metric [This    |
+   |                            |data asociated with       |document]  |
+   |                            |specific data node.       |           |
+   |                            |                          |           |
+   | ietf:loss                  |Represents the loss metric| [This     |
+   |                            |data associated with      | document] |
+   |                            |specific data node.       |           |
+   |                            |                          |           |
+   | ietf:counter               |Represents any metric value           |
+   |                            |associated with specific  |           |
+   |                            |data node that monotonically[This     |
+   |                            |increases over time,      | document] |
+   |                            |starting from zero.       |           |        
+   |                            |                          |           |
+   | ietf:gauge                 |Represents current        |           |
+   |                            |measurements associated   | [This     |
+   |                            |with specific data node   |document]  |
+   |                            |that may increase,        |           |
+   |                            |decrease or stay constant.|           |
+   |                            |                          |           |
+   | ietf:summary               |Represents the metric value [This     |
+   |                            |associated with specific  | document] |
+   |                            |data node that measures   |           |
+   |                            |distributions of discrete |           |
+   |                            |events without knowing    |           |
+   |                            |predefined range.         |           |
+   |                            |                          |           |
+   | ietf:unknown               |Represents the metric value [This     |
+   |                            |associated with specific  | document] |
+   |                            |data node that can not    |           |
+   |                            |determine the type of metric.         |
+   |                            |                          |           |
+   |ietf:agg                    |Relates to aggregated metric [This    |
+   |                            |value associated with     | document] |
+   |                            |specific data node (i.e., |           |
+   |                            |aggregated statistics)    |           |
+   +----------------------------+--------------------------+-----------+
+</artwork>
+        </figure>
+
+        <t>A data node can contain one or multiple data node tags.Data node to
+        be tagged with the initial value in Table 2 can be one of 'container',
+        'leaf-list', 'list', or 'leaf' data node. All tag values described in
+        Table 2 can be inherited down the containment hierarchy if Data nodes
+        tagged with those tag values is one of 'container', 'leaf-list',
+        'list'.</t>
+      </section>
+
+      <section anchor="xml" title="Updates to the IETF XML Registry">
+        <t>This document registers the following namespace URI in the "ns"
+        subregistry within the "IETF XML Registry" <xref
+        target="RFC3688"/>:</t>
+
+        <figure>
+          <artwork>   URI: urn:ietf:params:xml:ns:yang:ietf-data-node-tags
+   Registrant Contact: The IESG.
+   XML: N/A; the requested URI is an XML namespace.</artwork>
+        </figure>
+      </section>
+
+      <section anchor="module"
+               title="Updates to the YANG Module Names Registry">
+        <t>This document registers the following YANG module in the YANG
+        Module Names registry <xref target="RFC6020"/> within the "YANG
+        Parameters" registry:</t>
+
+        <figure>
+          <artwork>   name: ietf-data-node-tags
+   namespace: urn:ietf:params:xml:ns:yang:ietf-data-node-tags
+   prefix: ntags
+   reference: RFC XXXX
+   maintained by IANA: N</artwork>
+        </figure>
+      </section>
+    </section>
+
+    <section anchor="security" title="Security Considerations">
+      <t>The YANG module specified in this document defines schema for data
+      that is designed to be accessed via network management protocols such as
+      NETCONF <xref target="RFC6241"/> or RESTCONF <xref target="RFC8040"/>.
+      The lowest NETCONF layer is the secure transport layer, and the
+      mandatory-to-implement secure transport is Secure Shell (SSH) <xref
+      target="RFC6242"/>. The lowest RESTCONF layer is HTTPS, and the
+      mandatory-to-implement secure transport is TLS <xref
+      target="RFC8446"/>.</t>
+
+      <t>The Network Configuration Access Control Model (NACM) <xref
+      target="RFC8341"/> provides the means to restrict access for particular
+      NETCONF or RESTCONF users to a preconfigured subset of all available
+      NETCONF or RESTCONF protocol operations and content, e.g., the presence
+      of tags may reveal information about the way in which data nodes are
+      used and therefore providing access to private information or revealing
+      an attack vector should be restricted. Note that appropriate privilege
+      and security levels need to be applied to the addition and removal of
+      user tags to ensure that a user receives the correct data.</t>
+
+      <t>This document adds the ability to associate data node tag with data
+      nodes or instances of data nodes within the YANG modules. This document
+      does not define any actions based on these associations, and none are
+      yet defined, and therefore it does not by itself introduce any new
+      security considerations.</t>
+
+      <t>Users of the data node tag meta-data may define various actions to be
+      taken based on the data node tag meta-data. These actions and their
+      definitions are outside the scope of this document. Users will need to
+      consider the security implications of any actions they choose to define,
+      including the potential for a tag to get 'masked' by another user.</t>
+    </section>
+
+    <section title="Acknowledgements">
+      <t>The authors would like to thank Ran Tao for his major contributions
+      to the initial modeling and use cases.</t>
+
+      <t>The authors would also like to acknowledge the comments and
+      suggestions received from Juergen Schoenwaelder, Andy Bierman, Lou
+      Berger,Jaehoon Paul Jeong, Wei Wang, Yuan Zhang, Ander Liu, YingZhen Qu,
+      Boyuan Yan, Adrian Farrel, and Mahesh Jethanandani.</t>
+    </section>
+
+    <section title="Contributors">
+      <figure>
+        <artwork>      Liang Geng
+      Individual
+      32 Xuanwumen West St, Xicheng District
+      Beijing  10053</artwork>
+      </figure>
+    </section>
+
+    <!---->
+  </middle>
+
+  <back>
+    <references title="Normative References">
+      <?rfc include="reference.RFC.2119"?>
+
+      <?rfc include="reference.RFC.8174"?>
+
+      <?rfc include="reference.RFC.7950"?>
+
+      <?rfc include="reference.RFC.6020"?>
+
+      <?rfc include="reference.RFC.8407"?>
+
+      <?rfc include="reference.RFC.8126"?>
+
+      <?rfc include="reference.RFC.8819"?>
+
+      <?rfc include="reference.RFC.8040"?>
+
+      <?rfc include="reference.RFC.8446"?>
+
+      <?rfc include="reference.RFC.8341"?>
+
+      <?rfc include="reference.RFC.3688"?>
+    </references>
+
+    <references title="Informative References">
+      <?rfc include="reference.RFC.5198"?>
+
+      <?rfc include="reference.RFC.6241"?>
+
+      <?rfc include="reference.RFC.6242"?>
+
+      <?rfc include="reference.RFC.8340"?>
+
+      <?rfc include="reference.RFC.8639"?>
+
+      <?rfc include="reference.RFC.8641"?>
+
+      <?rfc include="reference.RFC.8342"?>
+
+      <?rfc include='reference.RFC.9196'?>
+
+      <?rfc include='reference.RFC.9195'?>
+
+      <?rfc include='reference.RFC.6022'?>
+
+      <?rfc include='reference.RFC.8792'?>
+
+      <?rfc include='reference.RFC.8526'?>
+
+      <reference anchor="FCAPS"
+                 target="http://www.itu.int/rec/T-REC-X.700-199209-I/en">
+        <front>
+          <title>X.700 : Management framework for Open Systems Interconnection
+          (OSI) for CCITT applications</title>
+
+          <author initials="" surname="International Telecommunication Union">
+            <organization/>
+          </author>
+
+          <date month="September" year="1992"/>
+        </front>
+
+        <seriesInfo name="" value=""/>
+      </reference>
+    </references>
+
+    <section title="Example: Additional Auxiliary Data Property Information">
+      <t>This section gives an example of how Auxiliary Data Property Module
+      could be defined. It demonstrates how auxiliary data property
+      configuration parameters can be conditionally augmented to the generic
+      data node list. The example is not intended as a complete module for
+      Auxiliary Data Property configuration.</t>
+
+      <figure>
+        <artwork>  module ex-auxiliary-data-property {
+    yang-version 1.1;
+     namespace "http://example.com/auxiliary-data-property";
+     prefix "dp";
+
+     import ietf-module-tags {
+       prefix tags;
+     }
+     import ietf-data-node-tags {
+       prefix ntags;
+     }
+     identity critical {
+      base ntags:node-tag-type;
+      description
+      "Identity for critical data node tag type.";
+     }
+     augment "/tags:module-tags/tags:module/ntags:data-node-tags/ntags:\
+       data-node/ntags:tags" {
+       when 'derived-from-or-self(ntags:type, "dp:critical")';
+       leaf value {
+         type string;
+           description
+           "The auxiliary information corresponding
+            to data node instance tagged with 'critical'
+            node tag type.";
+       }
+       // other auxiliary data property config params, etc.
+     }
+   }</artwork>
+      </figure>
+    </section>
+
+    <section title="Instance Level Tunnel Tagging Example">
+      <t>In the example shown in the following figure,the 'tunnel-svc' data
+      node is a list node defined in a 'example-tunnel-pm' module and has 7
+      child nodes:
+      'name','create-time','modified-time','average-latency','packet-loss','min-latency','max-latency'
+      leaf node. In these child nodes, the 'name' leaf node is the key leaf
+      for the 'tunnel-svc' list. Following is the tree diagram [RFC8340] for
+      the "example-tunnel-pm" module:<figure>
+          <artwork>        +--rw tunnel-svc* [name]
+        |   +--rw name                      string
+        |   +--ro create-time               yang:date-and-time
+        |   +--ro modified-time             yang:date-and-time
+        |   +--ro average-latency           yang:gauge64
+        |   +--ro packet-loss               yang:counter64
+        |   +--ro min-latency               yang:gauge64
+        |   +--ro max-latency               yang:gauge64</artwork>
+        </figure></t>
+
+      <t>To help identify specific data for a customer, users tags on specific
+      instances of the data nodes are created as follows:</t>
+
+      <figure>
+        <artwork>   &lt;rpc message-id="103"
+        xmlns="urn:ietf:params:xml:ns:netconf:base:1.0"&gt;
+     &lt;edit-data xmlns="urn:ietf:params:xml:ns:yang:ietf-netconf-nmda"
+                xmlns:ds="urn:ietf:params:xml:ns:yang:ietf-datastores"&gt;
+       &lt;datastore&gt;ds:running&lt;/datastore&gt;
+       &lt;config&gt;
+       &lt;module-tag&gt;
+        &lt;module&gt;
+        &lt;name&gt;example-tunnel-pm&lt;/name&gt;
+         &lt;data-node-tags xmlns="urn:ietf:params:xml:ns:yang:ietf-data\
+          -node-tags"&gt;
+         &lt;data-node&gt;
+           &lt;id&gt;
+            /tp:tunnel-svc[name='foo']/tp:packet-loss
+           &lt;/id&gt;
+           &lt;tags&gt;
+           &lt;tag&gt;user:customer1_example_com&lt;/tag&gt;
+           &lt;/tags&gt;
+           &lt;tags&gt;
+           &lt;tag&gt;ietf:critical&lt;/tag&gt;
+           &lt;/tags&gt;
+         &lt;/data-node&gt;
+         &lt;data-node&gt;
+           &lt;id&gt;
+             /tp:tunnel-svc[name='bar']/tp:modified-time
+          &lt;/id&gt;
+           &lt;tags&gt;
+           &lt;tag&gt;user:customer2_example_com&lt;/tag&gt;
+           &lt;/tags&gt;
+         &lt;/data-node&gt;
+       &lt;/data-node-tags&gt;
+      &lt;/module&gt;
+      &lt;/module-tag&gt;
+       &lt;/config&gt;
+     &lt;/edit-data&gt;
+   &lt;/rpc&gt;</artwork>
+      </figure>
+
+      <t>Note that the 'ietf:critical' tag is addtional new tag value that
+      needs to be allocated from "IETF Node Tags" subregistry in section
+      9.2.</t>
+    </section>
+
+    <section anchor="netconfex" title="NETCONF Example">
+      <t>The following is a NETCONF example result from a query of the data
+      node tags list. For the sake of brevity only a few module and associated
+      data node results are provided. The example uses the folding defined in
+      <xref target="RFC8792"/>.</t>
+
+      <figure title="Example NETCONF Query Output">
+        <artwork>=============== NOTE: '\' line wrapping per RFC 8792 ================
+
+&lt;ns0:data xmlns:ns0="urn:ietf:params:xml:ns:netconf:base:1.0"&gt;
+ &lt;t:module-tags xmlns:t="urn:ietf:params:xml:ns:yang:ietf-module-tags"&gt;
+    &lt;t:module&gt;
+       &lt;t:name&gt;ietf-interfaces&lt;/t:name&gt;
+       &lt;s:data-node-tags xmlns:s="urn:ietf:params:xml:ns:yang:ietf-\
+       data-node-tags"&gt;
+        &lt;s:data-node&gt;
+         &lt;s:id&gt;
+          /if:interfaces/if:interface/if:statistics/if:in-errors
+         &lt;/s:id&gt;
+         &lt;s:tags&gt;
+         &lt;s:tag&gt;ietf:metric&lt;/s:tag&gt;
+         &lt;/s:tags&gt;
+         &lt;s:tags&gt;
+         &lt;s:tag&gt;ietf:loss&lt;/s:tag&gt;
+         &lt;/s:tags&gt;
+         &lt;s:tags&gt;
+         &lt;s:tag&gt;ietf:agg&lt;/s:tag&gt;
+         &lt;/s:tags&gt;
+        &lt;/s:data-node&gt;
+      &lt;/s:data-node-tags&gt;
+    &lt;/t:module&gt;
+    &lt;t:module&gt;
+       &lt;t:id&gt;ietf-ip&lt;/t:id&gt;
+       &lt;s:data-node-tags xmlns:s="urn:ietf:params:xml:ns:yang:ietf\
+     -data-node-tags"&gt;
+        &lt;s:data-node&gt;
+        &lt;s:id&gt;/if:interfaces/if:interface/ip:ipv4/ip:mtu&lt;/s:id&gt;
+        &lt;s:tags&gt;
+        &lt;s:tag&gt;ietf:metric&lt;/s:tag&gt;
+        &lt;/s:tags&gt;
+       &lt;/s:data-node&gt;
+      &lt;/s:data-node-tags&gt;
+    &lt;/t:module&gt;
+  &lt;/t:module-tags&gt;
+&lt;/ns0:data&gt;</artwork>
+      </figure>
+    </section>
+
+    <section title="Non-NMDA State Module">
+      <t>As per [RFC8407], the following is a non-NMDA module to support
+      viewing the operational state for non-NMDA compliant servers.</t>
+
+      <figure>
+        <artwork>&lt;CODE BEGINS&gt; file "ietf-data-node-tags-state@2022-02-03.yang"
+module ietf-data-node-tags-state {
+  yang-version 1.1;
+  namespace 
+        "urn:ietf:params:xml:ns:yang:ietf-data-node-tags-state";
+  prefix ntags-s;
+
+  import ietf-netconf-acm {
+    prefix nacm;
+    reference
+    "RFC 8341: Network Configuration Access Control 
+               Model";
+  }
+  import ietf-module-tags {
+    prefix tags;
+  }
+  import ietf-module-tags-state {
+    prefix tags-s;
+    reference
+    "RFC 8819: YANG Module Tags ";
+  }
+  organization
+    "IETF NetMod Working Group (NetMod)";
+
+  contact
+   "WG Web: &lt;https://datatracker.ietf.org/wg/netmod/&gt;
+    WG List:&lt;mailto:netmod@ietf.org&gt;
+
+    Editor: Qin Wu 
+            &lt;mailto:bill.wu@huawei.com&gt;
+
+    Editor: Benoit Claise 
+            &lt;mailto:benoit.claise@huawei.com&gt;
+
+    Editor: Peng Liu 
+            &lt;mailto:liupengyjy@chinamobile.com&gt;
+
+    Editor: Zongpeng Du 
+            &lt;mailto:duzongpeng@chinamobile.com&gt;
+
+    Editor: Mohamed Boucadair 
+            &lt;mailto:mohamed.boucadair@orange.com&gt;";
+   // RFC Ed.: replace XXXX with actual RFC number and
+   // remove this note.
+  description
+    "This module describes a mechanism associating data node
+     tags with YANG data node within YANG modules. Tags may be 
+     IANA assigned or privately defined.
+
+     Copyright (c) 2022 IETF Trust and the persons identified as
+     authors of the code. All rights reserved.
+
+     Redistribution and use in source and binary forms, with or
+     without modification, is permitted pursuant to, and subject
+     to the license terms contained in, the Simplified BSD License 
+     set forth in Section 4.c of the IETF Trust's Legal Provisions
+     Relating to IETF Documents
+     (https://trustee.ietf.org/license-info).
+
+     This version of this YANG module is part of RFC XXXX
+     (https://datatracker.ietf.org/html/rfcXXXX); see the RFC 
+     itself for full legal notices.";
+
+   // RFC Ed.: update the date below with the date of RFC publication
+   // and RFC number and remove this note.
+  revision 2022-02-04 {
+    description
+      "Initial revision.";
+    reference
+      "RFC XXXX: Data node Tags in YANG Data
+                 Modules";
+  }
+  identity node-tag-type {
+   description
+     "Base identity for node tag type.";
+  }
+  augment "/tags-s:module-tags-state/tags-s:module" {
+    description
+      "Augments the Module Tags module with data node tag 
+       attributes.";
+    container data-node-tags {
+      config false;
+      status deprecated;
+      description
+        "Contains the list of data nodes and their 
+         associated self describing tags.";
+      list data-node {
+        key "id";
+        status deprecated;
+        description
+          "Lists the data nodes and their associated self 
+           describing tags.";
+        leaf id {
+          type nacm:node-instance-identifier;
+          mandatory true;
+          status deprecated;
+          description
+            "The YANG data node name.";
+        }
+       list tags {
+          key "tag";
+          status deprecated;
+          description
+            "Lists the tags associated with the data node within 
+             the YANG  module. 
+
+             See the IANA 'YANG data node Tag Prefixes' registry  
+             for reserved prefixes and the IANA 'IETF YANG Data 
+             Node Tags' registry for IETF tags.
+
+             The 'operational' state view of this list is
+             constructed using the following steps:
+
+             1) System tags (i.e., tags of 'system' origin) are 
+                added.
+             2) User configured tags (i.e., tags of 'intended' 
+                origin) are added.
+             3) Any tag that is equal to a masked-tag is removed.";
+          reference
+            "RFC XXXX: data node Tags in YANG Data
+                       Modules, Section 9";
+        leaf tag {
+          type tags:tag;
+          status deprecated;
+          description
+            "Node tag corresponding to type of node tag.";
+         }
+        leaf type {
+         type identityref {
+         base node-tag-type;
+         }
+        }
+     }
+        leaf-list masked-tag {
+          type tags:tag;
+          status deprecated;
+          description
+            "The list of tags that should not be associated with the 
+             data node within the YANG module. The user can remove 
+             (mask) tags from the operational state datastore by 
+             adding them to this list. It is not an error to add  
+             tags to this list that are not associated with the 
+             data node within YANG module, but they have no 
+             operational effect.";
+        }
+      }
+    }
+  }
+}
+&lt;CODE ENDS&gt;</artwork>
+      </figure>
+    </section>
+
+    <section title="Targeted Data Fetching Example">
+      <t>The following provides tagged data node Fetching example. The
+      subscription "id" values of 22 used below is just an example. In
+      production, the actual values of "id" might not be small integers.</t>
+
+      <figure>
+        <artwork>+-----------+                        +-----------+
+| Subscriber|                        | Publisher |
++-----+-----+                        +-----+-----+
+      |                                    |
+      |    data Node Tagging Fetching      |
+      |    (id, node-tag = metric)         |
+      |&lt;-----------------------------------+
+      |                                    |
+      |     establish-subscription         |
+      +-----------------------------------&gt;|
+      |                                    |
+      |       RPC Reply: OK, id = 22       |
+      |&lt;-----------------------------------+
+      |                                    |
+      |    Notification Message (for 22)   |
+      |&lt;-----------------------------------+
+      |                                    |</artwork>
+      </figure>
+
+      <t>The subscriber can query data node tag list from operational
+      datastore in the network device using ietf-data-node-tags module defined
+      in this document and fetch tagged data node instances and associated
+      data path to the datastore node. The data node tag information instruct
+      the receiver to subscribe tagged data node (e.g., performance metric
+      data nodes) using standard subscribed notification mechanism
+      [RFC8639].</t>
+
+      <figure anchor="ex" title="List of Available Target Objects">
+        <artwork>=============== NOTE: '\' line wrapping per RFC 8792 ================
+
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+    &lt;t:module-tags xmlns:t="urn:ietf:params:xml:ns:yang:ietf-\
+       module-tags"&gt;
+       &lt;t:module&gt;
+          &lt;t:name&gt;ietf-interfaces&lt;/t:name&gt;
+          &lt;s:data-node-tags xmlns:s="urn:ietf:params:xml:ns:yang:ietf-\
+       data-node-tags"&gt;
+           &lt;s:data-node&gt;
+            &lt;s:id&gt;/if:interfaces/if:interface/if:in-errors&lt;/s:id&gt;
+            &lt;s:tags&gt;
+            &lt;s:tag&gt;ietf:metric&lt;/s:tag&gt;
+            &lt;/s:tags&gt;
+            &lt;s:tags&gt;
+            &lt;s:tag&gt;ietf:loss&lt;/s:tag&gt;
+            &lt;/s:tags&gt;
+           &lt;/s:data-node&gt;
+           &lt;/s:data-node-tags&gt;
+      &lt;/t:module&gt;
+    &lt;/module-tags&gt;</artwork>
+      </figure>
+
+      <t/>
+
+      <t>With data node tag information returned,e.g., in the 'get-data'
+      operation, the subscriber identifies tagged data node and associated
+      data path to the datastore node and sends a standard
+      establish-subscription RPC <xref target="RFC8639"/> to subscribe tagged
+      data nodes that are interests to the client application from the
+      publisher. The publisher returns specific data node types of operational
+      state (e.g., in-errors statistics data) subscribed by the client as
+      follows:</t>
+
+      <figure>
+        <artwork>=============== NOTE: '\' line wrapping per RFC 8792 ================
+
+ &lt;netconf:rpc message-id="101"
+     xmlns:netconf="urn:ietf:params:xml:ns:netconf:base:1.0"&gt;
+   &lt;establish-subscription
+       xmlns="urn:ietf:params:xml:ns:yang:ietf-subscribed-notifica\
+tions"
+       xmlns:yp="urn:ietf:params:xml:ns:yang:ietf-yang-push"&gt;
+     &lt;yp:datastore
+          xmlns:ds="urn:ietf:params:xml:ns:yang:ietf-datastores"&gt;
+       ds:operational
+     &lt;/yp:datastore&gt;
+     &lt;yp:datastore-xpath-filter
+         xmlns:ex="https://example.com/sample-data/1.0"&gt;
+       /if:interfaces/if:interface/if:statistics/if:in-errors
+     &lt;/yp:datastore-xpath-filter&gt;
+     &lt;yp:periodic&gt;
+       &lt;yp:period&gt;500&lt;/yp:period&gt;
+     &lt;/yp:periodic&gt;
+   &lt;/establish-subscription&gt;
+ &lt;/netconf:rpc&gt;</artwork>
+      </figure>
+    </section>
+
+    <section title="Changes between Revisions">
+      <t>Editorial Note (To be removed by RFC Editor)</t>
+
+      <t>v06 - v07<list style="symbols">
+          <t>Update use case in section 3 to remove object and subobject
+          concept and massive related words.</t>
+
+          <t>Change the title into Data Node Tags in YANG Modules.</t>
+
+          <t>Update Model Tag design in section 5.1 based on Balazs's
+          comments.</t>
+
+          <t>Add Instance level tunnel tagging example in the Appendix.</t>
+
+          <t>Add 'type' parameter in the base model and add one more model
+          extension example in the Appendix.</t>
+
+          <t>Consolidate opm-tag extension, metric-type extension and
+          multi-source-tag extension into one generic yang extension.</t>
+
+          <t>Remove object tag and property tag.</t>
+
+          <t>Other Appendix Updates.</t>
+        </list></t>
+
+      <t>v05 - v06<list style="symbols">
+          <t>Additional Editorial changes;</t>
+
+          <t>Use the folding defined in [RFC8792].</t>
+        </list></t>
+
+      <t>v04 - v05<list style="symbols">
+          <t>Add user tag formating clarification;</t>
+
+          <t>Provide guidance to the Designated Expert for evaluation of YANG
+          data node Tag registry and YANG data node Tag prefix registry.</t>
+
+          <t>Update the figure 1 and figure 2 with additional tags.</t>
+
+          <t>Security section enhancement for user tag managment.</t>
+
+          <t>Change data node name into name in the module.</t>
+
+          <t>Other Editorial changes to address Adrian's comments and comments
+          during YANG docotor review.</t>
+
+          <t>Open issue: Are there any risks associated with an attacker
+          adding or removing tags so that a requester gets the wrong data?</t>
+        </list></t>
+
+      <t>v03 - v04<list style="symbols">
+          <t>Remove histogram metric type tag from metric type tags.</t>
+
+          <t>Clarify the object tag and property tag,metric tag are mutual
+          exlusive.</t>
+
+          <t>Clarify to have two optional node tags (i.e.,object tag and
+          property tag) to indicate relationship between data nodes.</t>
+
+          <t>Update targeted data node collection example.</t>
+        </list></t>
+
+      <t>v02 - v03<list style="symbols">
+          <t>Additional Editorial changes.</t>
+
+          <t>Security section enhancement.</t>
+
+          <t>Nits fixed.</t>
+        </list></t>
+
+      <t>v01 - v02<list style="symbols">
+          <t>Clarify the relation between data node, object tag, property tag
+          and metric tag in figure 1 and figure 2 and related description;</t>
+
+          <t>Change Metric Group into Metric Type in the YANG model;</t>
+
+          <t>Add 5 metric types in section 7.2;</t>
+        </list></t>
+
+      <t>v00 - v01<list style="symbols">
+          <t>Merge data node tag use case section into introduction section as
+          a subsection;</t>
+
+          <t>Add one glossary section;</t>
+
+          <t>Clarify the relation between data node, object tag, property tag
+          and metric tag in data node Tags Use Case section;</t>
+
+          <t>Add update to RFC8407 in the front page.</t>
+        </list></t>
+    </section>
+  </back>
+</rfc>

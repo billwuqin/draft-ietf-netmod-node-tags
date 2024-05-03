@@ -136,36 +136,36 @@
   <middle>
     <section anchor="intro" title="Introduction">
       <t>The use of tags for classification and organization purposes is
-      widespread, not only within IETF protocols, but globally in the Internet
-      (e.g., "#hashtags"). For the specific case of YANG data models, a module
-      tag has already been defined as a string that is associated with a
-      module name at the module level <xref target="RFC8819"/>for YANG modules
-      classification.</t>
+      widespread within IETF protocols.  For the specific case of YANG data
+      models, a module tag has been associated with a module name at the 
+      module level <xref target="RFC8819"/> for YANG modules classification.
+      </t>
 
-      <t>Many data models have been specified by various Standards Developing
-      Organizations (SDOs) and the Open Source community, and it is likely
-      that many more will be specified. These models cover many of the
-      networking protocols and techniques. However, data nodes defined by
-      these technology-specific data models might represent only a portion of
-      fault, configuration, accounting, performance, and security (FCAPS)
-      management information (<xref target="FCAPS"/>) at different levels and
-      network locations, but also categorized in various different ways.
-      Furthermore, there is no consistent classification criteria or
-      representations for a specific service, feature, or data source.</t>
+      <t>At the time of writing, many data models have been specified by
+      various Standards Developing Organizations (SDOs) and the Open Source
+      community, and it is likely that many more will be specified.  These
+      models cover many of the networking protocols and techniques. However,
+      data nodes defined by these technology-specific data models might  
+      represent only a portion of fault, configuration, accounting, 
+      performance, and security (FCAPS) management information 
+      <xref target="FCAPS"/>) at the node level within a YANG data model.
+      There is no consistent classification criteria or representations
+      across node level for a specific service, feature, or data source.</t>
 
       <t>This document defines tags for both nodes in the schema tree and
       instance nodes in the data tree, and shows how these tags can be
-      associated with nodes within a YANG module, to:<list style="symbols">
-          <t>Provide dictionary meaning for specific targeted data nodes;</t>
+      associated with nodes within a YANG module (See Use cases in section 3)
+      , to:<list style="symbols">
+          <t>Classify specific data nodes or instance of data nodes into 
+          categories based on data sources such as log, metric, trace data 
+          and provide dictionary meaning for specific targeted data nodes;</t>
 
-          <t>Indicate a relationship between data nodes within the same YANG
-          module or from different YANG modules;</t>
+          <t>Identify characteristic data, e.g., key performance metric
+          related data nodes and the absolute XPath expression identifying
+          the element path to the nodes.</t>
 
-          <t>Identify auxiliary data properties related to data nodes;</t>
-
-          <t>Identify key performance metric related data nodes and the
-          absolute XPath expression identifying the element path to the
-          nodes.</t>
+          <t>Indicate a relationship between data nodes either within the
+          same YANG module or across various different YANG modules;</t>
         </list></t>
 
       <t>To that aim, this document defines a YANG module [RFC7950] that
@@ -211,8 +211,8 @@
       of a particular data node instance) while tags for data node in the
       schema tree defined in Section 6 are retrieved centrally via the
       "ietf-node-tags" module and can be either assigned during the module
-      defintion time or dynamically set by the client for a given data node
-      instance.</t>
+      defintion time ((See example in section 8.1)) or dynamically set by the
+      client for a given data node instance (See example in Appendix A).</t>
 
       <t>This document also defines an IANA registry for tag prefixes and a
       set of globally assigned tags (<xref target="iana"/>).</t>
@@ -283,30 +283,28 @@
       tags. This section does not intend to be exhaustive.</t>
 
       <t>An example of the use of tags is to search discrete categories of
-      YANG nodes that are scattered across the same or different YANG modules
-      supported by a device. For example, if instances of these nodes in YANG
-      modules are adequately tagged and set by a first client ("Client A") via
-      the "ietf-node-tags" module (Section 7) and retrieved by another client
-      ("Client B") from the operational datastore, then "Client B" can obtain
-      the path to the tagged nodes and subscribe only to network performance
-      related data node instances in the operational datastore supported by a
-      device.</t>
-
-      <t>"Client B" can also subscribe to updates from the operational
-      datastore using the "ietf-node-tags" module. Any tag changes in the
-      updates will then resynchronize to the "Client B".</t>
+      YANG nodes that are scattered across the same or different YANG
+      modules supported by a device.  For example, if instances of these
+      nodes in YANG modules are adequately tagged and set by a first client
+      ("Client A") via the "ietf-node-tags" module (Section 7) and
+      retrieved by another client ("Client B") from the operational
+      datastore, then "Client B" can obtain the path to the tagged nodes
+      and subscribe only to, e.g., network performance related data node instances
+      in the operational datastore supported by a device. "Client B" can also
+      subscribe to updates from the operational datastore using the 
+      "ietf-node-tags" module.  Any tag changes in the
+      updates will then resynchronize to the "Client B". Without tags, a user
+      don't know two YANG nodes across the same or different YANG
+      modules belong to the same category or represent the same dictionary meaning.
+      </t>
 
       <t>Also, tag classification is useful for users searching data node
-      repositories. A query restricted to the "ietf:metric" data node tag in
-      the "ietf-node-tags" module can be used to return only the YANG nodes
-      that are associated with the metric. Without tags, a user would need to
-      know the name of all the IETF YANG data nodes or instances of data nodes
-      in different YANG modules.</t>
+      repositories.  A query restricted to the "ietf:metric" data node tag
+      in the "ietf-node-tags" module can be used to return only the YANG
+      nodes that are associated with the metric.  Without tags, a user
+      would need to know the name of all the IETF YANG data nodes or
+      instances of data nodes in different YANG modules.</t>
 
-      <t>Future management protocol extensions could allow for filtering
-      queries of configuration or operational state on a server based on tags
-      (for example, return all operational state related to system
-      management).</t>
     </section>
 
     <section title="Node Tag Values">

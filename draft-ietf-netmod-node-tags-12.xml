@@ -1251,6 +1251,15 @@ module ietf-node-tags-state {
     <section title="Changes between Revisions">
       <t>Editorial Note (To be removed by RFC Editor)</t>
 
+      <t>v-11 -v12<list style="symbols">
+          <t>Update Motivation in the introduction section to align what is 
+          proposed in this document.</t>
+
+          <t>Add reference to use case in section 3.</t>
+
+          <t>Update use cases in section 3 to clarify why this work is needed</t>
+      </list></t>
+    
       <t>v10 - v11<list style="symbols">
           <t>Remove all specific metrics from both terminology section and
           section 9.2 on IETF YANG Data Node Tags Registry based on WGLC

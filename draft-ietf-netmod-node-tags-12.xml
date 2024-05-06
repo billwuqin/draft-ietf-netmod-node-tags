@@ -155,7 +155,7 @@
       <t>This document defines tags for both nodes in the schema tree and
       instance nodes in the data tree, and shows how these tags can be
       associated with nodes within a YANG module (See Sample Use cases in
-      section 3), to:<list style="symbols">
+      <xref target="UC"/>), to:<list style="symbols">
           <t>Classify specific data nodes or instance of data nodes into 
           categories based on data sources such as log, metric, or trace data 
           and provide dictionary meaning for specific targeted data nodes;</t>
@@ -200,7 +200,7 @@
 
           <t>User-configured tags (i.e., tags of "intended" origin) that are
           dynamically defined and added by users at runtime. See the example
-          in <xref target="Moduleexam"/>;</t>
+          in <xref target="taggingexam"/>;</t>
 
           <t>Any tag that is equal to a masked-tag is removed.</t>
         </list></t>
@@ -215,7 +215,7 @@
       "ietf-node-tags" module and can be either assigned during the module
       definition time (See examples in <xref target="guideline"/>) or dynamically
       set by the client for a given data node instance (See the example in 
-      <xref target="Moduleexam"/>).</t>
+      <xref target="taggingexam"/>).</t>
 
       <t>This document also defines an IANA registry for tag prefixes and a
       set of globally assigned tags (<xref target="iana"/>).</t>
@@ -281,7 +281,7 @@
 
     <!-- intro -->
 
-    <section title="Sample Use Cases for Node Tags">
+    <section anchor="UC" title="Sample Use Cases for Node Tags">
       <t>The following describes some use cases to illustrate the use of node
       tags. This section does not intend to be exhaustive.</t>
 

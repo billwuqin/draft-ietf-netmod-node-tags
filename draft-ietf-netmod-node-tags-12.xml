@@ -150,19 +150,19 @@
       performance, and security (FCAPS) management information 
       <xref target="FCAPS"/>) at the node level within a YANG data model.
       There is no consistent classification criteria or representations
-      across node level for a specific service, feature, or data source.</t>
+      across a node level for a specific service, feature, or data source.</t>
 
       <t>This document defines tags for both nodes in the schema tree and
       instance nodes in the data tree, and shows how these tags can be
       associated with nodes within a YANG module (See Sample Use cases in
       section 3), to:<list style="symbols">
           <t>Classify specific data nodes or instance of data nodes into 
-          categories based on data sources such as log, metric, trace data 
+          categories based on data sources such as log, metric, or trace data 
           and provide dictionary meaning for specific targeted data nodes;</t>
 
-          <t>Identify characteristic data, e.g., key performance metric
-          related data nodes and the absolute XPath expression identifying
-          the element path to the nodes.</t>
+          <t> Identify characteristic data (e.g., key performance metrics)
+          related to data nodes, and the absolute XPath expression identifying the
+          element path to the nodes;</t>
 
           <t>Indicate a relationship between data nodes either within the
           same YANG module or across various different YANG modules;</t>
@@ -199,7 +199,7 @@
           section 8.1;</t>
 
           <t>User-configured tags (i.e., tags of "intended" origin) that are
-          dynamically defined and added by users at runtime,See sample example
+          dynamically defined and added by users at runtime. See the example
           in appendix A;</t>
 
           <t>Any tag that is equal to a masked-tag is removed.</t>
@@ -213,8 +213,8 @@
       of a particular data node instance) while tags for data node in the
       schema tree defined in Section 6 are retrieved centrally via the
       "ietf-node-tags" module and can be either assigned during the module
-      definition time ((See examples in section 8.1)) or dynamically set by the
-      client for a given data node instance (See sample example in Appendix A)
+      definition time (See examples in section 8.1) or dynamically set by the
+      client for a given data node instance (See the example in Appendix A)
       .</t>
 
       <t>This document also defines an IANA registry for tag prefixes and a
@@ -297,7 +297,7 @@
       subscribe to updates from the operational datastore using the 
       "ietf-node-tags" module.  Any tag changes in the
       updates will then resynchronize to the "Client B". Without tags, a user
-      don't know two YANG nodes across the same or different YANG
+      don't know two YANG nodes in the same or different YANG
       modules belong to the same category or represent the same dictionary meaning.
       </t>
 
@@ -412,7 +412,7 @@
       </section>
     </section>
 
-    <section title="Node Tags Module Structure">
+    <section anchor="Modulestruct" title="Node Tags Module Structure">
       <section anchor="Tagmodule" title="Node Tags Module Tree">
         <t>The tree associated with the "ietf-node-tags" module is shown as
         figure 1:</t>
@@ -912,7 +912,7 @@ module ietf-node-tags {
       </reference>
     </references>
 
-    <section title="Instance Level Tunnel Tagging Example">
+    <section anchor="taggingexam" title="Instance Level Tunnel Tagging Example">
       <t>In the example shown in the following figure,the 'tunnel-svc' data
       node is a list node defined in a 'example-tunnel-pm' module and has 7
       child nodes:

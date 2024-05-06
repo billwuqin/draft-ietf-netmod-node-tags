@@ -268,7 +268,7 @@
           associated with it. Where logging provides an overview to a
           discrete, event-triggered log, tracing encompasses a much wider,
           continuous view of an application <xref target="OpenTelemetry"/>
-          <xref target="I-D.ietf-netconf-trace-ctx-extension">.</t>
+          <xref target="I-D.ietf-netconf-trace-ctx-extension"/>.</t>
 
           <t hangText="Info:">Info is used to expose textual information which
           SHOULD NOT change during process lifetime. Common examples are an

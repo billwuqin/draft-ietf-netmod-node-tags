@@ -154,8 +154,8 @@
 
       <t>This document defines tags for both nodes in the schema tree and
       instance nodes in the data tree, and shows how these tags can be
-      associated with nodes within a YANG module (See Use cases in section 3)
-      , to:<list style="symbols">
+      associated with nodes within a YANG module (See Sample Use cases in
+      section 3), to:<list style="symbols">
           <t>Classify specific data nodes or instance of data nodes into 
           categories based on data sources such as log, metric, trace data 
           and provide dictionary meaning for specific targeted data nodes;</t>
@@ -195,10 +195,12 @@
       state view are constructed using the following steps:<list
           style="numbers">
           <t>System tags (i.e., tags of "system" origin) that are assigned
-          during the module definition time are added;</t>
+          during the module definition time are added, see examples in
+          section 8.1;</t>
 
           <t>User-configured tags (i.e., tags of "intended" origin) that are
-          dynamically defined and added by users at runtime;</t>
+          dynamically defined and added by users at runtime,See sample example
+          in appendix A;</t>
 
           <t>Any tag that is equal to a masked-tag is removed.</t>
         </list></t>
@@ -211,8 +213,9 @@
       of a particular data node instance) while tags for data node in the
       schema tree defined in Section 6 are retrieved centrally via the
       "ietf-node-tags" module and can be either assigned during the module
-      defintion time ((See example in section 8.1)) or dynamically set by the
-      client for a given data node instance (See example in Appendix A).</t>
+      definition time ((See examples in section 8.1)) or dynamically set by the
+      client for a given data node instance (See sample example in Appendix A)
+      .</t>
 
       <t>This document also defines an IANA registry for tag prefixes and a
       set of globally assigned tags (<xref target="iana"/>).</t>
@@ -264,8 +267,8 @@
           environment. Every trace needs to have a unique identifier
           associated with it. Where logging provides an overview to a
           discrete, event-triggered log, tracing encompasses a much wider,
-          continuous view of an application <xref
-          target="OpenTelemetry"/>.</t>
+          continuous view of an application <xref target="OpenTelemetry"/>
+          <xref target="I-D.ietf-netconf-trace-ctx-extension">.</t>
 
           <t hangText="Info:">Info is used to expose textual information which
           SHOULD NOT change during process lifetime. Common examples are an
@@ -889,7 +892,9 @@ module ietf-node-tags {
       <?rfc include="reference.RFC.9195"?>
 
       <?rfc include="reference.RFC.9371"?>
-
+        
+      <?rfc include="reference.I-D.ietf-netconf-trace-ctx-extension"?>
+    
       <reference anchor="FCAPS"
                  target="http://www.itu.int/rec/T-REC-X.700-199209-I/en">
         <front>
